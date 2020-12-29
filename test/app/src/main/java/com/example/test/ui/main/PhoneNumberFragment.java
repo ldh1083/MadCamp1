@@ -11,14 +11,13 @@ import androidx.lifecycle.ViewModelProvider;
 import android.widget.ListView;
 import java.util.ArrayList;
 
+import com.example.test.MainActivity;
 import com.example.test.R;
 
 public class PhoneNumberFragment extends Fragment  {
     private static final String ARG_SECTION_NUMBER = "section_number";
 
-    private ArrayList<String> array_mountain;
     private ListView listView;
-    String[] name= {"a", "b", "c"};
 
     public static PhoneNumberFragment newInstance(int index) {
         PhoneNumberFragment fragment = new PhoneNumberFragment();
@@ -33,5 +32,12 @@ public class PhoneNumberFragment extends Fragment  {
         View view = inflater.inflate(R.layout.phonenumber_fragment, container, false);
         listView = (ListView) view.findViewById(R.id.listview1);
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        PhonenumberAdapter adapter = new PhonenumberAdapter(getContext(), MainActivity.phonenumbers);
+        listView.setAdapter(adapter);
     }
 }

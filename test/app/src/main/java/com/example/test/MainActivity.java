@@ -21,6 +21,15 @@ public class MainActivity extends AppCompatActivity {
         phonenumbers.add(new Phonenumber("name1", "010-0000-0001"));
         phonenumbers.add(new Phonenumber("name2", "010-0000-0002"));
         phonenumbers.add(new Phonenumber("name3", "010-0000-0003"));
+        phonenumbers.add(new Phonenumber("name1", "010-0000-0001"));
+        phonenumbers.add(new Phonenumber("name2", "010-0000-0002"));
+        phonenumbers.add(new Phonenumber("name3", "010-0000-0003"));
+        phonenumbers.add(new Phonenumber("name1", "010-0000-0001"));
+        phonenumbers.add(new Phonenumber("name2", "010-0000-0002"));
+        phonenumbers.add(new Phonenumber("name3", "010-0000-0003"));
+        phonenumbers.add(new Phonenumber("name1", "010-0000-0001"));
+        phonenumbers.add(new Phonenumber("name2", "010-0000-0002"));
+        phonenumbers.add(new Phonenumber("name3", "010-0000-0003"));
 
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
         ViewPager viewPager = findViewById(R.id.view_pager);

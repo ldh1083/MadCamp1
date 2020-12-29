@@ -28,6 +28,8 @@ public class PhonenumberAdapter extends ArrayAdapter<Phonenumber> {
 
         TextView nameTextView = (TextView) rowView.findViewById(R.id.txt_name);
         nameTextView.setText(phonenumbers.get(position).getName());
+        final TextView numberTextView = (TextView) rowView.findViewById(R.id.number);
+        numberTextView.setText(phonenumbers.get(position).getNumber());
         // View에 Data 세팅
         return rowView;
     }

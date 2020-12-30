@@ -21,7 +21,7 @@ public class PhoneNumberFragment extends Fragment  {
     private static final String ARG_SECTION_NUMBER = "section_number";
 
     private ListView listView;
-
+    PhonenumberAdapter adapter;
     public static PhoneNumberFragment newInstance(int index) {
         PhoneNumberFragment fragment = new PhoneNumberFragment();
         Bundle bundle = new Bundle();
@@ -41,7 +41,13 @@ public class PhoneNumberFragment extends Fragment  {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        PhonenumberAdapter adapter = new PhonenumberAdapter(getContext(), MainActivity.phonenumbers);
+        adapter = new PhonenumberAdapter(getContext(), MainActivity.phonenumbers);
+        adapter.notifyDataSetChanged();
         listView.setAdapter(adapter);
+    }
+
+    public void refresh(){
+        adapter.notifyDataSetChanged();
+        //listView.setAdapter(adapter);
     }
 }

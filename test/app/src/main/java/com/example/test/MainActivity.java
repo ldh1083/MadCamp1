@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.example.test.ui.main.PhoneNumberFragment;
 import com.example.test.ui.main.Phonenumber;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
@@ -141,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
                         String newName = nameEditText.getText().toString();
                         String newNunmber = numberEditText.getText().toString();
                         phonenumbers.add(new Phonenumber(newName, newNunmber));
+                        ((PhoneNumberFragment)getSupportFragmentManager().findFragmentByTag( "android:switcher:" + viewPager.getId() + ":" + sectionsPagerAdapter.getItemId(0))).refresh();
 
                         JSONObject jsonObject5 = new JSONObject();
                         JSONArray newArray = new JSONArray();
@@ -181,6 +183,7 @@ public class MainActivity extends AppCompatActivity {
                 });
                 AlertDialog ad = aDialog.create();
                 ad.show();
+
             }
         });
     }

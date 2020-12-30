@@ -8,6 +8,12 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.test.ui.main.SectionsPagerAdapter;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -17,19 +23,27 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        phonenumbers.add(new Phonenumber("name1", "010-0000-0001"));
-        phonenumbers.add(new Phonenumber("name2", "010-0000-0002"));
-        phonenumbers.add(new Phonenumber("name3", "010-0000-0003"));
-        phonenumbers.add(new Phonenumber("name1", "010-0000-0001"));
-        phonenumbers.add(new Phonenumber("name2", "010-0000-0002"));
-        phonenumbers.add(new Phonenumber("name3", "010-0000-0003"));
-        phonenumbers.add(new Phonenumber("name1", "010-0000-0001"));
-        phonenumbers.add(new Phonenumber("name2", "010-0000-0002"));
-        phonenumbers.add(new Phonenumber("name3", "010-0000-0003"));
-        phonenumbers.add(new Phonenumber("name1", "010-0000-0001"));
-        phonenumbers.add(new Phonenumber("name2", "010-0000-0002"));
-        phonenumbers.add(new Phonenumber("name3", "010-0000-0003"));
+        String json = null;
+        try{
+            InputStream is = getAssets().open("jsons/Phonenumbers.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+            JSONArray contactArray = jsonObject.getJSONArray("Contacts");
+            for(int i=0; i<contactArray.length(); i++) {
+                jsonObject = contactArray.getJSONObject(i);
+                phonenumbers.add(new Phonenumber(jsonObject.getString("name"), jsonObject.getString("number")));
+            }
+        }catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
         ViewPager viewPager = findViewById(R.id.view_pager);

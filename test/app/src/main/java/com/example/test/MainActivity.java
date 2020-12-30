@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,22 +23,44 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+
 public class MainActivity extends AppCompatActivity {
     public static ArrayList<Phonenumber> phonenumbers = new ArrayList<>();
-
     private EditText nameEditText = null;
     private EditText numberEditText = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        phonenumbers = new ArrayList<>();
+
+        // 초기화
+        /*JSONObject jsonObject0 = new JSONObject();
+        String filename = "Phonenumbers.json";
+        String fileContents = "Hello world!";
+        try {
+            try (FileOutputStream fos = getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE)) {
+                fos.write(jsonObject0.toString().getBytes());
+                fos.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         String json = null;
         try{
-            InputStream is = getAssets().open("jsons/Phonenumbers.json");
+            InputStream is = getApplicationContext().openFileInput("Phonenumbers.json");
             int size = is.available();
             byte[] buffer = new byte[size];
             is.read(buffer);
@@ -119,13 +141,36 @@ public class MainActivity extends AppCompatActivity {
                         String newName = nameEditText.getText().toString();
                         String newNunmber = numberEditText.getText().toString();
                         phonenumbers.add(new Phonenumber(newName, newNunmber));
-                        setStringArrayPref("contact", phonenumbers);
-                        JSONObject jsonObject = new JSONObject();
-                        try{
-                            jsonObject.put("name", newName);
-                            jsonObject.put("number", newNunmber);
 
+                        JSONObject jsonObject5 = new JSONObject();
+                        JSONArray newArray = new JSONArray();
+                        try{
+                            for(int i=0; i<phonenumbers.size(); i++) {
+                                JSONObject jsonObject1 = new JSONObject();
+                                try{
+                                    jsonObject1.put("name", phonenumbers.get(i).getName());
+                                    jsonObject1.put("number", phonenumbers.get(i).getNumber());
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                newArray.put(jsonObject1);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            jsonObject5.put("Contacts", newArray);
                         } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        String filename = "Phonenumbers.json";
+                        try {
+                            try (FileOutputStream fos = getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE)) {
+                                fos.write(jsonObject5.toString().getBytes());
+                                fos.close();
+                            }
+                        } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
@@ -139,38 +184,4 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    public void setStringArrayPref(String key, ArrayList<Phonenumber> values) {
-        SharedPreferences prefs = getSharedPreferences("contact", MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        JSONArray a = new JSONArray();
-        for (int i = 0; i < values.size(); i++) {
-            a.put(values.get(i));
-        }
-        if (!values.isEmpty()) {
-            editor.putString(key, a.toString());
-        } else {
-            editor.putString(key, null);
-        }
-        editor.commit();
-        System.out.println("hello");
-    }
-
-    private ArrayList<String> getStringArrayPref(Context context, String key) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String json = prefs.getString(key, null);
-        ArrayList<String> urls = new ArrayList<String>();
-        if (json != null) {
-            try {
-                JSONArray a = new JSONArray(json);
-                for (int i = 0; i < a.length(); i++) {
-                    String url = a.optString(i);
-                    urls.add(url);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        return urls;
-    }
-
 }

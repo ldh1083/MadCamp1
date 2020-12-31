@@ -7,7 +7,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 
 import com.example.test.MainActivity;
 import com.example.test.R;
@@ -17,7 +19,9 @@ import java.util.ArrayList;
 
 public class GalleryFragment extends Fragment  {
     private static final String ARG_SECTION_NUMBER = "section_number";
-
+    ViewPager viewPager;
+    ScrollView sv;
+    GalleryAdaptor gelleryAdapter;
     public static GalleryFragment newInstance(int index) {
         GalleryFragment fragment = new GalleryFragment();
         Bundle bundle = new Bundle();
@@ -29,7 +33,7 @@ public class GalleryFragment extends Fragment  {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.gallery_fragment, container, false);
-        ScrollView sv = (ScrollView) view.findViewById(R.id.main_frame);
+        sv = (ScrollView) view.findViewById(R.id.main_frame);
         ArrayList<ImageView> images = new ArrayList<>();
         ImageView iv;
         for(int i=0; i<10;i++){
@@ -61,28 +65,37 @@ public class GalleryFragment extends Fragment  {
             iv_big = (ImageView) view.findViewById(iid);
             big_images.add(iv_big);
         }
+
+        gelleryAdapter = new GalleryAdaptor(getChildFragmentManager());
+        viewPager = (ViewPager)view.findViewById(R.id.view_pager1);
+        viewPager.setAdapter(gelleryAdapter);
+        viewPager.setVisibility(View.INVISIBLE);
         for(int i=0; i<10;i++){
             int finalI = i;
             images.get(i).setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v) {
-                    big_images.get(finalI).setVisibility(View.VISIBLE);
-                    sv.setVisibility(View.INVISIBLE);
+                    viewPager.setCurrentItem(finalI);
+                    viewPager.setVisibility(View.VISIBLE);
+                    //big_images.get(finalI).setVisibility(View.VISIBLE);
+                    //sv.setVisibility(View.INVISIBLE);
                 }
             });
         }
-        for(int i=0; i<10;i++){
-            int finalI = i;
-            big_images.get(i).setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v) {
-                    big_images.get(finalI).setVisibility(View.INVISIBLE);
-                    sv.setVisibility(View.VISIBLE);
-                }
-            });
-        }
+        viewPager.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                //big_images.get(finalI).setVisibility(View.INVISIBLE);
+                //viewPager.setVisibility(View.INVISIBLE);
+                //sv.setVisibility(View.VISIBLE);
+            }
+        });
         return view;
+    }
+    public void back(){
+        viewPager.setVisibility(View.INVISIBLE);
+        sv.setVisibility(View.VISIBLE);
     }
 }

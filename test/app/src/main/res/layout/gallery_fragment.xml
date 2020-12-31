@@ -131,6 +131,11 @@
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/view_pager1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"/>
     <ImageView
         android:id="@+id/image1"
         android:layout_width="match_parent"

@@ -14,7 +14,8 @@
         android:id="@+id/name"
         android:layout_width="200dip"
         android:layout_height="wrap_content"
-        android:layout_marginRight="20dp" />
+        android:layout_marginRight="20dp"
+        android:text="Sample EditText" />
     <TextView
         android:text="전화번호"
         android:id="@+id/TextView02"
@@ -26,4 +27,5 @@
         android:id="@+id/number"
         android:layout_width="200dip"
         android:layout_height="wrap_content"/>
+        android:text="Sample EditText" />
 </LinearLayout>

@@ -11,11 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.example.test.ui.main.FreeFragment;
 import com.example.test.ui.main.PhoneNumberFragment;
 import com.example.test.ui.main.Phonenumber;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.test.ui.main.SectionsPagerAdapter;
@@ -39,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     public static ArrayList<Phonenumber> phonenumbers = new ArrayList<>();
     private EditText nameEditText = null;
     private EditText numberEditText = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         phonenumbers = new ArrayList<>();
@@ -60,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         String json = null;
-        try{
+        try {
             InputStream is = getApplicationContext().openFileInput("Phonenumbers.json");
             int size = is.available();
             byte[] buffer = new byte[size];
@@ -73,11 +78,11 @@ public class MainActivity extends AppCompatActivity {
         try {
             JSONObject jsonObject = new JSONObject(json);
             JSONArray contactArray = jsonObject.getJSONArray("Contacts");
-            for(int i=0; i<contactArray.length(); i++) {
+            for (int i = 0; i < contactArray.length(); i++) {
                 jsonObject = contactArray.getJSONObject(i);
                 phonenumbers.add(new Phonenumber(jsonObject.getString("name"), jsonObject.getString("number")));
             }
-        }catch (JSONException e) {
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 
@@ -97,9 +102,11 @@ public class MainActivity extends AppCompatActivity {
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
             }
+
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
             }
+
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
             }
@@ -120,10 +127,12 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
 
             @Override
-            public void onPageScrollStateChanged(int state) {}
+            public void onPageScrollStateChanged(int state) {
+            }
         });
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -131,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Context mContext = getApplicationContext();
                 LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
-                View layout = inflater.inflate(R.layout.save_phonenumber,(ViewGroup) findViewById(R.id.layout_root));
+                View layout = inflater.inflate(R.layout.save_phonenumber, (ViewGroup) findViewById(R.id.layout_root));
                 AlertDialog.Builder aDialog = new AlertDialog.Builder(MainActivity.this);
                 aDialog.setTitle("New");
                 aDialog.setView(layout);
@@ -142,14 +151,14 @@ public class MainActivity extends AppCompatActivity {
                         String newName = nameEditText.getText().toString();
                         String newNunmber = numberEditText.getText().toString();
                         phonenumbers.add(new Phonenumber(newName, newNunmber));
-                        ((PhoneNumberFragment)getSupportFragmentManager().findFragmentByTag( "android:switcher:" + viewPager.getId() + ":" + sectionsPagerAdapter.getItemId(0))).refresh();
+                        ((PhoneNumberFragment) getSupportFragmentManager().findFragmentByTag("android:switcher:" + viewPager.getId() + ":" + sectionsPagerAdapter.getItemId(0))).refresh();
 
                         JSONObject jsonObject5 = new JSONObject();
                         JSONArray newArray = new JSONArray();
-                        try{
-                            for(int i=0; i<phonenumbers.size(); i++) {
+                        try {
+                            for (int i = 0; i < phonenumbers.size(); i++) {
                                 JSONObject jsonObject1 = new JSONObject();
-                                try{
+                                try {
                                     jsonObject1.put("name", phonenumbers.get(i).getName());
                                     jsonObject1.put("number", phonenumbers.get(i).getNumber());
                                 } catch (JSONException e) {
@@ -187,4 +196,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+/*
+    public void move_fragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.view_pager, FreeFragment.newInstance(2));
+        fragmentTransaction.commit();
+    }*/
 }

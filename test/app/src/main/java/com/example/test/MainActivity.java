@@ -39,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
     public static ArrayList<Phonenumber> phonenumbers = new ArrayList<>();
     private EditText nameEditText = null;
     private EditText numberEditText = null;
+
+    public static int img[] = {R.drawable.img1, R.drawable.img2, R.drawable.img3, R.drawable.img4, R.drawable.img1, R.drawable.img2, R.drawable.img3, R.drawable.img4, R.drawable.img1, R.drawable.img2, R.drawable.img3, R.drawable.img4};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         phonenumbers = new ArrayList<>();
@@ -140,8 +142,8 @@ public class MainActivity extends AppCompatActivity {
                 aDialog.setPositiveButton("저장", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         String newName = nameEditText.getText().toString();
-                        String newNunmber = numberEditText.getText().toString();
-                        phonenumbers.add(new Phonenumber(newName, newNunmber));
+                        String newNumber = numberEditText.getText().toString();
+                        phonenumbers.add(new Phonenumber(newName, newNumber));
                         ((PhoneNumberFragment)getSupportFragmentManager().findFragmentByTag( "android:switcher:" + viewPager.getId() + ":" + sectionsPagerAdapter.getItemId(0))).refresh();
 
                         JSONObject jsonObject5 = new JSONObject();
@@ -183,7 +185,6 @@ public class MainActivity extends AppCompatActivity {
                 });
                 AlertDialog ad = aDialog.create();
                 ad.show();
-
             }
         });
     }

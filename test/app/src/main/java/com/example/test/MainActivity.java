@@ -46,22 +46,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        phonenumbers = new ArrayList<>();
-
-        // 초기화
-        /*JSONObject jsonObject0 = new JSONObject();
-        String filename = "Phonenumbers.json";
-        String fileContents = "Hello world!";
+        File f = new File("/Phonenumbers.json");
         try {
-            try (FileOutputStream fos = getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE)) {
-                fos.write(jsonObject0.toString().getBytes());
-                fos.close();
-            }
-        } catch (IOException e) {
+            FileOutputStream fos = new FileOutputStream(f, true);
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }*/
-
-
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         String json = null;

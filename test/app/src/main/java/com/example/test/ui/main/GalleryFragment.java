@@ -8,6 +8,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 
 import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 
 import com.example.test.MainActivity;
 import com.example.test.R;
@@ -16,6 +17,7 @@ public class GalleryFragment extends Fragment  {
     private static final String ARG_SECTION_NUMBER = "section_number";
 
     private GridView gridView;
+    private ViewPager imgViewPager;
     GalleryAdapter adapter;
     public static GalleryFragment newInstance(int index) {
         GalleryFragment fragment = new GalleryFragment();
@@ -42,7 +44,8 @@ public class GalleryFragment extends Fragment  {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                imgViewPager = view.findViewById(R.id.view_pager2);
+                imgViewPager.setCurrentItem(position, true);
             }
         });
     }

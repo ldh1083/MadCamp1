@@ -131,7 +131,7 @@
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
-    <androidx.viewpager.widget.ViewPager
+    <com.example.test.ui.main.CustomViewPager
         android:id="@+id/view_pager1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

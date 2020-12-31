@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.example.test.ui.main.CustomViewPager;
 import com.example.test.ui.main.FreeFragment;
 import com.example.test.ui.main.PhoneNumberFragment;
 import com.example.test.ui.main.Phonenumber;
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     public static ArrayList<Phonenumber> phonenumbers = new ArrayList<>();
     private EditText nameEditText = null;
     private EditText numberEditText = null;
-
+    CustomViewPager viewPager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         File f = new File("/Phonenumbers.json");
@@ -77,9 +78,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
-        ViewPager viewPager = findViewById(R.id.view_pager);
+        viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(sectionsPagerAdapter);
-
+        viewPager.setPagingEnabled(true);
         TabLayout tabs = (TabLayout) findViewById(R.id.tabs);
         tabs.addTab(tabs.newTab().setText("전화번호부"));
         tabs.addTab(tabs.newTab().setText("갤러리"));
@@ -193,4 +194,7 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.view_pager, FreeFragment.newInstance(2));
         fragmentTransaction.commit();
     }*/
+    public void can_scroll(boolean key) {
+        this.viewPager.setPagingEnabled(key);
+    }
 }

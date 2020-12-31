@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.test.MainActivity;
+import com.example.test.ui.main.CustomViewPager;
 import com.example.test.R;
 
 import java.lang.reflect.Field;
@@ -19,9 +20,9 @@ import java.util.ArrayList;
 
 public class GalleryFragment extends Fragment  {
     private static final String ARG_SECTION_NUMBER = "section_number";
-    ViewPager viewPager;
-    ScrollView sv;
-    GalleryAdaptor gelleryAdapter;
+    private CustomViewPager viewPager;
+    private ScrollView sv;
+    private GalleryAdaptor gelleryAdapter;
     public static GalleryFragment newInstance(int index) {
         GalleryFragment fragment = new GalleryFragment();
         Bundle bundle = new Bundle();
@@ -66,17 +67,19 @@ public class GalleryFragment extends Fragment  {
             iv_big = (ImageView) view.findViewById(iid);
             big_images.add(iv_big);
         }
+        viewPager = (CustomViewPager)view.findViewById(R.id.view_pager1);
 
-        gelleryAdapter = new GalleryAdaptor(getChildFragmentManager());
-        viewPager = (ViewPager)view.findViewById(R.id.view_pager1);
-        viewPager.setAdapter(gelleryAdapter);
-        viewPager.setVisibility(View.INVISIBLE);
         for(int i=0; i<10;i++){
             int finalI = i;
             images.get(i).setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v) {
+                    gelleryAdapter = new GalleryAdaptor(getChildFragmentManager(), 10);
+                    ((MainActivity) getActivity()).can_scroll(false);
+                    viewPager.setAdapter(gelleryAdapter);
+                    viewPager.setVisibility(View.INVISIBLE);
+                    viewPager.setPagingEnabled(true);
                     viewPager.setCurrentItem(finalI);
                     viewPager.setVisibility(View.VISIBLE);
                     //big_images.get(finalI).setVisibility(View.VISIBLE);
@@ -96,7 +99,11 @@ public class GalleryFragment extends Fragment  {
         return view;
     }
     public void back(){
-        viewPager.setVisibility(View.INVISIBLE);
-        sv.setVisibility(View.VISIBLE);
+        this.viewPager.setPagingEnabled(false);
+        gelleryAdapter = new GalleryAdaptor(getChildFragmentManager(), 1);
+        viewPager.setAdapter(gelleryAdapter);
+        this.viewPager.setVisibility(View.INVISIBLE);
+        this.sv.setVisibility(View.VISIBLE);
+        ((MainActivity) getActivity()).can_scroll(true);
     }
 }

@@ -47,13 +47,14 @@ public class MainActivity extends AppCompatActivity {
     CustomViewPager viewPager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        phonenumbers = new ArrayList<>();
         /*JSONObject jsonObject5 = new JSONObject();
         JSONArray newArray = new JSONArray();
         try {
             for (int i = 0; i <5; i++) {
                 JSONObject jsonObject1 = new JSONObject();
                 try {
-                    jsonObject1.put("name", "밥");
+                    jsonObject1.put("name", "밥"+i);
                     jsonObject1.put("kcal", "310kcal");
                     jsonObject1.put("num", "0");
                 } catch (JSONException e) {

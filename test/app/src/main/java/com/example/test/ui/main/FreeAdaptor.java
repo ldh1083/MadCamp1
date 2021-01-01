@@ -77,7 +77,7 @@ public class FreeAdaptor extends ArrayAdapter<Food> {
                 if (days.size() > 0) {
                     if (date != days.get(days.size()-1).getDate()) {
                         if (callback != null) {
-                            foods = callback.update();
+                            callback.update();
                         }
                     }
                 }

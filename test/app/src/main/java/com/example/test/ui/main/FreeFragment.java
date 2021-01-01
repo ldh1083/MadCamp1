@@ -61,6 +61,8 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        foods = new ArrayList<>();
+        days = new ArrayList<>();
         mNow = System.currentTimeMillis();
         mDate = new Date(mNow);
         date =Integer.parseInt(mFormat.format(mDate));

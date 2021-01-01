@@ -14,7 +14,9 @@ import androidx.fragment.app.FragmentManager;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import com.example.test.R;
 
@@ -28,15 +30,29 @@ import javax.security.auth.callback.Callback;
 
 public class FreeAdaptor extends ArrayAdapter<Food> {
     private Context context;
-    private final ArrayList<Food> foods;
-    private Callback callback;
+    private ArrayList<Food> foods;
+    private ArrayList<Day> days;
+    AdapterCallback callback;
     public static int new_kcal;
     FreeFragment fragment;
-    public FreeAdaptor(Context context, ArrayList<Food> foods) {
+
+    int date;
+    SimpleDateFormat mFormat = new SimpleDateFormat("MMdd");
+    long mNow;
+    Date mDate;
+    public interface AdapterCallback{
+        void eat_food(int new_kcal);
+        ArrayList<Food> update();
+        ArrayList<Day> return_day();
+        void drawgraph();
+    }
+
+    public FreeAdaptor(Context context, ArrayList<Food> foods, ArrayList<Day>days, AdapterCallback callback) {
         super(context,-1,foods);
         this.context = context;
+        this.callback = callback;
         this.foods = foods;
-        this.callback = null;
+        this.days = days;
     }
 
     @Override
@@ -54,9 +70,25 @@ public class FreeAdaptor extends ArrayAdapter<Food> {
         ImageButton plus_botton = rowView.findViewById(R.id.plus_button);
         plus_botton.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
+                mNow = System.currentTimeMillis();
+                mDate = new Date(mNow);
+                date =Integer.parseInt(mFormat.format(mDate));
+                days = callback.return_day();
+                if (days.size() > 0) {
+                    if (date != days.get(days.size()-1).getDate()) {
+                        if (callback != null) {
+                            foods = callback.update();
+                        }
+                    }
+                }
+
                 foods.get(position).setNum(foods.get(position).getNum()+1);
                 numTextView.setText("수량: " + foods.get(position).getNum());
                 new_kcal =  Integer.parseInt(foods.get(position).getkcal().substring(0, foods.get(position).getkcal().length()-4));
+
+                if(callback != null) {
+                    callback.eat_food(new_kcal);
+                }
 
                 JSONObject jsonObject5 = new JSONObject();
                 JSONArray newArray = new JSONArray();
@@ -90,13 +122,31 @@ public class FreeAdaptor extends ArrayAdapter<Food> {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                callback.drawgraph();
             }
         });
         ImageButton minus_botton = rowView.findViewById(R.id.minus_button);
         minus_botton.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
+                mNow = System.currentTimeMillis();
+                mDate = new Date(mNow);
+                date =Integer.parseInt(mFormat.format(mDate));
+                days = callback.return_day();
+                if (days.size() > 0) {
+                    if (date != days.get(days.size()-1).getDate()) {
+                        if (callback != null) {
+                            foods = callback.update();
+                        }
+                    }
+                }
+
                 foods.get(position).setNum(foods.get(position).getNum()-1);
                 numTextView.setText("수량: " + foods.get(position).getNum());
+                new_kcal =  Integer.parseInt(foods.get(position).getkcal().substring(0, foods.get(position).getkcal().length()-4));
+
+                if(callback != null) {
+                    callback.eat_food(-new_kcal);
+                }
 
                 JSONObject jsonObject5 = new JSONObject();
                 JSONArray newArray = new JSONArray();
@@ -130,6 +180,7 @@ public class FreeAdaptor extends ArrayAdapter<Food> {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                callback.drawgraph();
             }
         });
 

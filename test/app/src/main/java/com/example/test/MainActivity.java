@@ -47,6 +47,39 @@ public class MainActivity extends AppCompatActivity {
     CustomViewPager viewPager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        /*JSONObject jsonObject5 = new JSONObject();
+        JSONArray newArray = new JSONArray();
+        try {
+            for (int i = 0; i <5; i++) {
+                JSONObject jsonObject1 = new JSONObject();
+                try {
+                    jsonObject1.put("name", "밥");
+                    jsonObject1.put("kcal", "310kcal");
+                    jsonObject1.put("num", "0");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                newArray.put(jsonObject1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            jsonObject5.put("Foods", newArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String filename = "Foods.json";
+        try {
+            try (FileOutputStream fos = getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE)) {
+                fos.write(jsonObject5.toString().getBytes());
+                fos.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
+
         String path = getFilesDir().getAbsolutePath() + "/Phonenumbers.json";
         File file = new File(path);
         try {

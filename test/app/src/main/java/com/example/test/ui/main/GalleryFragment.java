@@ -33,7 +33,6 @@ public class GalleryFragment extends Fragment  {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        System.out.println("hello");
         View view = inflater.inflate(R.layout.gallery_fragment, container, false);
         sv = (ScrollView) view.findViewById(R.id.main_frame);
         ArrayList<ImageView> images = new ArrayList<>();

@@ -84,6 +84,7 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        total_kcal = 0;
         try {
             JSONObject jsonObject = new JSONObject(json);
             JSONArray contactArray = jsonObject.getJSONArray("Foods");
@@ -100,7 +101,7 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
         this.adapter = new FreeAdaptor(getContext(), foods, days, this);
         listView.setAdapter(adapter);
 
-        nameTextView.setText("오늘 칼로리: "+total_kcal);
+
 
         lineChart = (LineChart) view.findViewById(R.id.chart);
 
@@ -164,6 +165,7 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
             update();
         }
         drawgraph();
+        nameTextView.setText("오늘 칼로리: "+total_kcal);
         return view;
     }
 

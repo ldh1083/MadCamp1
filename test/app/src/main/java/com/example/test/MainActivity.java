@@ -47,10 +47,12 @@ public class MainActivity extends AppCompatActivity {
     CustomViewPager viewPager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        File f = new File("/Phonenumbers.json");
+        String path = getFilesDir().getAbsolutePath() + "/Phonenumbers.json";
+        File file = new File(path);
         try {
-            FileOutputStream fos = new FileOutputStream(f, true);
+            FileOutputStream fos = new FileOutputStream(file, true);
         } catch (FileNotFoundException e) {
+            System.out.println("error");
             e.printStackTrace();
         }
         super.onCreate(savedInstanceState);

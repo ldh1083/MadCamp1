@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         phonenumbers = new ArrayList<>();
 
         // 초기화
-        /*JSONObject jsonObject0 = new JSONObject();
+        JSONObject jsonObject0 = new JSONObject();
         String filename = "Phonenumbers.json";
         String fileContents = "Hello world!";
         try {
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
 
 
         super.onCreate(savedInstanceState);

@@ -57,20 +57,22 @@
             <ImageButton
                 android:id="@+id/plus_button"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="30dp"
                 android:layout_weight="1"
                 android:background="@color/white"
                 android:src="@drawable/plus"
                 android:scaleType="fitCenter"
+                android:layout_gravity="center"
                 android:layout_margin="5dp"/>
             <ImageButton
                 android:id="@+id/minus_button"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="30dp"
                 android:layout_weight="1"
                 android:background="@color/white"
                 android:src="@drawable/minus"
                 android:scaleType="fitCenter"
+                android:layout_gravity="center"
                 android:layout_margin="5dp"/>
         </LinearLayout>
 

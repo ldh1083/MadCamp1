@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +15,14 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.test.R;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
@@ -177,41 +181,8 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
                                     nameTextView.setTextColor(Color.GREEN);
                                 }
                             }
+                            drawgraph();
                         }
-                        /*phonenumbers.add(new Phonenumber(newName, newNunmber));
-                        ((PhoneNumberFragment) getSupportFragmentManager().findFragmentByTag("android:switcher:" + viewPager.getId() + ":" + sectionsPagerAdapter.getItemId(0))).refresh();
-
-                        JSONObject jsonObject5 = new JSONObject();
-                        JSONArray newArray = new JSONArray();
-                        try {
-                            for (int i = 0; i < phonenumbers.size(); i++) {
-                                JSONObject jsonObject1 = new JSONObject();
-                                try {
-                                    jsonObject1.put("name", phonenumbers.get(i).getName());
-                                    jsonObject1.put("number", phonenumbers.get(i).getNumber());
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                                newArray.put(jsonObject1);
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            jsonObject5.put("Contacts", newArray);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        String filename = "Phonenumbers.json";
-                        try {
-                            try (FileOutputStream fos = getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE)) {
-                                fos.write(jsonObject5.toString().getBytes());
-                                fos.close();
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }*/
                     }
                 });
                 aDialog.setNegativeButton("취소", new DialogInterface.OnClickListener() {
@@ -317,7 +288,6 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
         try {
             FileOutputStream fos = new FileOutputStream(file, true);
         } catch (FileNotFoundException e) {
-            System.out.println("error");
             e.printStackTrace();
         }
 
@@ -345,12 +315,10 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
         if (days.size()>0) {
             int last_day = days.get(days.size()-1).getDate();
             if (last_day != date){
-                System.out.println("101010");
                 update();
             }
         }
         else {
-            System.out.println("123123");
             update();
         }
         drawgraph();
@@ -363,6 +331,17 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
         total_kcal += new_kcal;
         if (total_kcal>recommend) {
             nameTextView.setTextColor(Color.RED);
+            if (new_kcal>0) {
+                Toast toast = Toast.makeText(getActivity(), (total_kcal - recommend) + "kcal over..", Toast.LENGTH_SHORT);
+                toast.show();
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        toast.cancel();
+                    }
+                }, 1000);
+            }
         }
         else {
             nameTextView.setTextColor(Color.GREEN);
@@ -530,11 +509,17 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
         dataset.setColors(ColorTemplate.COLORFUL_COLORS);
         lineChart.setData(data);
 
+        LimitLine ll2 = new LimitLine(recommend, "");
+        ll2.setLineWidth(2f);
+        ll2.enableDashedLine(5f, 5f, 0f);//dashed line
+        ll2.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);//Set the position of the label display
+        ll2.setTextSize(10f);
 
         YAxis yLAxis = lineChart.getAxisLeft();
         yLAxis.setTextColor(R.color.white);
         yLAxis.setTextSize(7);
         //yLAxis.setDrawLabels(false);
+        yLAxis.addLimitLine(ll2);
 
         YAxis yRAxis = lineChart.getAxisRight();
         yRAxis.setTextColor(R.color.white);

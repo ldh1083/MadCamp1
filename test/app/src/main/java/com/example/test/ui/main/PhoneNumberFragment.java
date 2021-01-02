@@ -1,11 +1,13 @@
 package com.example.test.ui.main;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -15,6 +17,8 @@ import androidx.fragment.app.Fragment;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import com.example.test.MainActivity;
 import com.example.test.R;
@@ -149,6 +153,27 @@ public class PhoneNumberFragment extends Fragment  {
             return false;
             }
 
+        });
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @SuppressLint("ResourceType")
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                PopupMenu popupMenu = new PopupMenu(getContext(), view);
+                popupMenu.getMenuInflater().inflate(R.layout.call_popup_menu, popupMenu.getMenu());
+                final int index = position;
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()){
+                            case R.id.new_game:
+                                Toast.makeText((MainActivity)getContext(), "save", Toast.LENGTH_SHORT).show();
+                                break;
+                        }
+                        return false;
+                    }
+                });
+                popupMenu.show();
+            }
         });
         return view;
     }

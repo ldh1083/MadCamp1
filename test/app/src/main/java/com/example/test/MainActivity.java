@@ -13,6 +13,7 @@ import android.widget.EditText;
 
 import com.example.test.ui.main.CustomViewPager;
 import com.example.test.ui.main.FreeFragment;
+import com.example.test.ui.main.GalleryAdaptor;
 import com.example.test.ui.main.PhoneNumberFragment;
 import com.example.test.ui.main.Phonenumber;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -45,10 +46,11 @@ public class MainActivity extends AppCompatActivity {
     private EditText nameEditText = null;
     private EditText numberEditText = null;
     CustomViewPager viewPager;
+    private boolean isFocused;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         phonenumbers = new ArrayList<>();
-        /*JSONObject jsonObject5 = new JSONObject();
+/*        JSONObject jsonObject5 = new JSONObject();
         JSONArray newArray = new JSONArray();
         try {
             for (int i = 0; i <5; i++) {
@@ -80,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }*/
+
         init_nutrition();
 
         String path = getFilesDir().getAbsolutePath() + "/Phonenumbers.json";
@@ -268,5 +271,37 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    public interface OnBackPressedListener{
+        void onBack();
+    }
+
+    private OnBackPressedListener mBackListener;
+
+    public void setOnBackPressedListener(OnBackPressedListener listener){
+        mBackListener = listener;
+    }
+    /*public void releaseGalleryFocus(){
+        this.viewPager.setPagingEnabled(false);
+        GalleryAdaptor gelleryAdapter = new GalleryAdaptor(getSupportFragmentManager(), 1);
+        viewPager.setAdapter(gelleryAdapter);
+        this.viewPager.setVisibility(View.INVISIBLE);
+        this.sv.setVisibility(View.VISIBLE);
+        ((MainActivity) getActivity()).can_scroll(true);
+    }*/
+    public void foo(){
+        System.out.println("foo!");
+    }
+    @Override
+    public void onBackPressed(){
+        if ((mBackListener != null) && isFocused){
+            mBackListener.onBack();
+        }
+        else{
+            super.onBackPressed();
+        }
+    }
+    public void setIsFocused(boolean isFocused){
+        this.isFocused = isFocused;
     }
 }

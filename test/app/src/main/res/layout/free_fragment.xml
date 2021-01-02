@@ -18,7 +18,7 @@
             android:layout_height="300dp"
             android:overScrollMode="never"
             android:scrollbars="none"
-            android:dividerHeight="0dp"/>
+            android:dividerHeight="0dp" />
         <TextView
             android:id="@+id/total_kcal"
             android:layout_width="match_parent"

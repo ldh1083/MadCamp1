@@ -332,6 +332,9 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
                 else {
                     sdate = Integer.toString(days.get(i).getDate());
                 }
+                StringBuffer origin = new StringBuffer(sdate);
+                origin.insert(2, '/');
+                sdate = origin.toString();
                 labels.add(sdate);
             }
             entries.add(new Entry(total_kcal, days.size()-1));
@@ -343,6 +346,9 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
             else {
                 sdate = Integer.toString(days.get(days.size()-1).getDate());
             }
+            StringBuffer origin = new StringBuffer(sdate);
+            origin.insert(2, '/');
+            sdate = origin.toString();
             labels.add(sdate);
         }
         else {
@@ -357,7 +363,7 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
             }
             StringBuffer origin = new StringBuffer(sdate);
             origin.insert(2, '/');
-            sdate = origin.toString();;
+            sdate = origin.toString();
             labels.add(sdate);
         }
         dataset = new LineDataSet(entries, "day");

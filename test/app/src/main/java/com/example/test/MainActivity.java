@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText nameEditText = null;
     private EditText numberEditText = null;
     CustomViewPager viewPager;
+    private boolean isFocused;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         phonenumbers = new ArrayList<>();
@@ -280,5 +281,27 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("error");
             e.printStackTrace();
         }
+    }
+    public interface OnBackPressedListener{
+        void onBack();
+    }
+
+    private OnBackPressedListener mBackListener;
+
+    public void setOnBackPressedListener(OnBackPressedListener listener){
+        mBackListener = listener;
+    }
+
+    @Override
+    public void onBackPressed(){
+        if((mBackListener != null) && isFocused){
+            mBackListener.onBack();
+        }
+        else{
+            super.onBackPressed();
+        }
+    }
+    public void setIsFocused(boolean isFocused){
+        this.isFocused = isFocused;
     }
 }

@@ -1,5 +1,6 @@
 package com.example.test.ui.main;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +19,7 @@ import com.example.test.R;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
-public class GalleryFragment extends Fragment  {
+public class GalleryFragment extends Fragment implements MainActivity.OnBackPressedListener {
     private static final String ARG_SECTION_NUMBER = "section_number";
     private CustomViewPager viewPager;
     private ScrollView sv;
@@ -83,6 +84,7 @@ public class GalleryFragment extends Fragment  {
                     viewPager.setVisibility(View.VISIBLE);
                     //big_images.get(finalI).setVisibility(View.VISIBLE);
                     //sv.setVisibility(View.INVISIBLE);
+                    ((MainActivity)getContext()).setIsFocused(true);
                 }
             });
         }
@@ -104,5 +106,21 @@ public class GalleryFragment extends Fragment  {
         this.viewPager.setVisibility(View.INVISIBLE);
         this.sv.setVisibility(View.VISIBLE);
         ((MainActivity) getActivity()).can_scroll(true);
+    }
+    @Override
+    public void onBack(){
+        MainActivity activity = (MainActivity)getActivity();
+        activity.setIsFocused(false);
+        this.viewPager.setPagingEnabled(false);
+        gelleryAdapter = new GalleryAdaptor(getChildFragmentManager(), 1);
+        viewPager.setAdapter(gelleryAdapter);
+        this.viewPager.setVisibility(View.INVISIBLE);
+        this.sv.setVisibility(View.VISIBLE);
+        ((MainActivity) getActivity()).can_scroll(true);
+    }
+    @Override
+    public void onAttach (Context context){
+        super.onAttach(context);
+        ((MainActivity)context).setOnBackPressedListener(this);
     }
 }

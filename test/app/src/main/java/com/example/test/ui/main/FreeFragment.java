@@ -381,12 +381,12 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
 
         YAxis yLAxis = lineChart.getAxisLeft();
         yLAxis.setTextColor(R.color.white);
+        yLAxis.setTextSize(7);
         //yLAxis.setDrawLabels(false);
 
         YAxis yRAxis = lineChart.getAxisRight();
-        yRAxis.setDrawLabels(false);
-        yRAxis.setDrawAxisLine(false);
-        yRAxis.setDrawGridLines(false);
+        yRAxis.setTextColor(R.color.white);
+        yRAxis.setTextSize(7);
 
         lineChart.invalidate();
     }

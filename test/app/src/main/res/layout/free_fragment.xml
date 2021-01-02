@@ -12,6 +12,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+        <TextView
+            android:id="@+id/user_info"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:text="사용자 정보: 길게 눌러서 설정하세요"
+            android:textSize="15dp"/>
         <ListView
             android:id="@+id/food_list"
             android:layout_width="match_parent"
@@ -19,10 +25,22 @@
             android:overScrollMode="never"
             android:scrollbars="none"
             android:dividerHeight="0dp" />
-        <TextView
-            android:id="@+id/total_kcal"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"/>
+            android:layout_height="40dp"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/total_kcal"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="40dp"/>
+            <TextView
+                android:id="@+id/recommend_kcal"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="40dp"
+                android:text="권장 칼로리: "/>
+        </LinearLayout>
         <com.github.mikephil.charting.charts.LineChart
             android:layout_height="match_parent"
             android:layout_width="match_parent"

@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }*/
         init_nutrition();
+        init_user();
 
         String path = getFilesDir().getAbsolutePath() + "/Phonenumbers.json";
         File file = new File(path);
@@ -266,6 +267,17 @@ public class MainActivity extends AppCompatActivity {
                 fos.close();
             }
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void init_user() {
+        String path = getFilesDir().getAbsolutePath() + "/User.json";
+        File file = new File(path);
+        try {
+            FileOutputStream fos = new FileOutputStream(file, true);
+        } catch (FileNotFoundException e) {
+            System.out.println("error");
             e.printStackTrace();
         }
     }

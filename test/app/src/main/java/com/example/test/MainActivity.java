@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }*/
+        init_nutrition();
 
         String path = getFilesDir().getAbsolutePath() + "/Phonenumbers.json";
         File file = new File(path);
@@ -232,5 +233,40 @@ public class MainActivity extends AppCompatActivity {
     }*/
     public void can_scroll(boolean key) {
         this.viewPager.setPagingEnabled(key);
+    }
+
+    public void init_nutrition() {
+        JSONObject jsonObject5 = new JSONObject();
+        JSONArray newArray = new JSONArray();
+        try {
+            for (int i = 0; i <5; i++) {
+                JSONObject jsonObject1 = new JSONObject();
+                try {
+                    jsonObject1.put("carb", "43");
+                    jsonObject1.put("protein", "25");
+                    jsonObject1.put("fat", "10");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                newArray.put(jsonObject1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            jsonObject5.put("Nutrition", newArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String filename = "Nutritions.json";
+        try {
+            try (FileOutputStream fos = getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE)) {
+                fos.write(jsonObject5.toString().getBytes());
+                fos.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

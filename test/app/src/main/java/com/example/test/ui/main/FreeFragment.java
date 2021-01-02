@@ -1,10 +1,13 @@
 package com.example.test.ui.main;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -12,10 +15,13 @@ import androidx.fragment.app.Fragment;
 
 import com.example.test.R;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,6 +37,7 @@ import java.util.ArrayList;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 import static com.example.test.MainActivity.phonenumbers;
 
 public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallback {
@@ -41,6 +48,7 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
     LineChart lineChart;
     ArrayList<Entry> entries= new ArrayList<>();;
     ArrayList<String> labels = new ArrayList<String>();
+    ArrayList<Nutrition> nutritions = new ArrayList<>();
     LineDataSet dataset;
     LineData data;
     ListView listView;
@@ -61,6 +69,9 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        nutritions = new ArrayList<>();
+        nutritions = get_nutrition();
         foods = new ArrayList<>();
         days = new ArrayList<>();
         mNow = System.currentTimeMillis();
@@ -101,7 +112,35 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
         this.adapter = new FreeAdaptor(getContext(), foods, days, this);
         listView.setAdapter(adapter);
 
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                View layout = inflater.inflate(R.layout.info_food, (ViewGroup) view.findViewById(R.id.layout_roots));
+                AlertDialog.Builder aDialog = new AlertDialog.Builder(getContext());
+                aDialog.setTitle("상세 정보");
+                aDialog.setView(layout);
 
+                TextView name = layout.findViewById(R.id.foodname);
+                name.setText(foods.get(position).getName());
+                TextView kcal = layout.findViewById(R.id.foodkcal);
+                kcal.setText(foods.get(position).getkcal());
+                TextView carb = layout.findViewById(R.id.carb);
+                carb.setText("탄수화물: "+nutritions.get(position).getCarb()+"g");
+                TextView protein = layout.findViewById(R.id.protein);
+                protein.setText("단백질: "+nutritions.get(position).getProtein()+"g");
+                TextView fat = layout.findViewById(R.id.fat);
+                fat.setText("지방: "+nutritions.get(position).getFat()+"g");
+                aDialog.setPositiveButton("취소", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+                AlertDialog ad = aDialog.create();
+                ad.show();
+                return false;
+
+            }
+        });
 
         lineChart = (LineChart) view.findViewById(R.id.chart);
 
@@ -116,9 +155,11 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
         labels.add("April");
         labels.add("May");
         dataset = new LineDataSet(entries, "day");
-        data = new LineData(labels, dataset);
         dataset.setColors(ColorTemplate.COLORFUL_COLORS);
+        data = new LineData(labels, dataset);
+        data.setValueTextSize(40f);
         lineChart.setData(data);
+        lineChart.setDescription("");
         //lineChart.animateY(5000);
 
 
@@ -314,13 +355,58 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
             else {
                 sdate = Integer.toString(days.get(days.size()-1).getDate());
             }
+            StringBuffer origin = new StringBuffer(sdate);
+            origin.insert(2, '/');
+            sdate = origin.toString();;
             labels.add(sdate);
         }
         dataset = new LineDataSet(entries, "day");
         data = new LineData(labels, dataset);
+        data.setValueTextSize(10f);
+        data.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+                return value+"kcal";
+            }
+        });
         dataset.setColors(ColorTemplate.COLORFUL_COLORS);
         lineChart.setData(data);
+
+
+        YAxis yLAxis = lineChart.getAxisLeft();
+        yLAxis.setTextColor(R.color.white);
+        //yLAxis.setDrawLabels(false);
+
+        YAxis yRAxis = lineChart.getAxisRight();
+        yRAxis.setDrawLabels(false);
+        yRAxis.setDrawAxisLine(false);
+        yRAxis.setDrawGridLines(false);
+
         lineChart.invalidate();
     }
-
+    public ArrayList<Nutrition> get_nutrition() {
+        ArrayList<Nutrition> nutritions = new ArrayList<>();
+        String json = null;
+        try {
+            InputStream is = getContext().openFileInput("Nutritions.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+            JSONArray contactArray = jsonObject.getJSONArray("Nutrition");
+            for (int i = 0; i < contactArray.length(); i++) {
+                jsonObject = contactArray.getJSONObject(i);
+                nutritions.add(new Nutrition(jsonObject.getInt("carb"), jsonObject.getInt("protein"), jsonObject.getInt("fat")));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return nutritions;
+    }
 }

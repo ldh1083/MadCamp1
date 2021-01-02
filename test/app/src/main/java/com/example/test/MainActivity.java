@@ -11,10 +11,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.example.test.ui.main.ImageFocusFragment;
 import com.example.test.ui.main.Phonenumber;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.test.ui.main.SectionsPagerAdapter;
@@ -183,5 +187,12 @@ public class MainActivity extends AppCompatActivity {
                 ad.show();
             }
         });
+    }
+    public void replaceFragment(Fragment fragment){
+        System.out.println(fragment);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.view_pager, fragment).commit();
+        System.out.println("reached");
     }
 }

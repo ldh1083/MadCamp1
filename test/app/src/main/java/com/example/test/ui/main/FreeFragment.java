@@ -77,7 +77,6 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         user = new ArrayList<>();
         user = get_user();
-
         nutritions = new ArrayList<>();
         nutritions = get_nutrition();
         foods = new ArrayList<>();

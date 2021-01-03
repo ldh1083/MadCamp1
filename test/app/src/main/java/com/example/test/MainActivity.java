@@ -1,9 +1,12 @@
 package com.example.test;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.LayoutInflater;
@@ -18,6 +21,8 @@ import com.example.test.ui.main.Phonenumber;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -42,6 +47,9 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
     public static ArrayList<Phonenumber> phonenumbers = new ArrayList<>();
+    public static ArrayList<Phonenumber> sub_phonenumbers = new ArrayList<>();
+    private static final int REQUEST_RUNTIME_PERMISSION = 123;
+    String[] permissons = {Manifest.permission.READ_CONTACTS};
     private EditText nameEditText = null;
     private EditText numberEditText = null;
     CustomViewPager viewPager;
@@ -49,38 +57,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         phonenumbers = new ArrayList<>();
-        /*JSONObject jsonObject5 = new JSONObject();
-        JSONArray newArray = new JSONArray();
-        try {
-            for (int i = 0; i <5; i++) {
-                JSONObject jsonObject1 = new JSONObject();
-                try {
-                    jsonObject1.put("name", "밥"+i);
-                    jsonObject1.put("kcal", "310kcal");
-                    jsonObject1.put("num", "0");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                newArray.put(jsonObject1);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            jsonObject5.put("Foods", newArray);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        sub_phonenumbers = new ArrayList<>();
 
-        String filename = "Foods.json";
-        try {
-            try (FileOutputStream fos = getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE)) {
-                fos.write(jsonObject5.toString().getBytes());
-                fos.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
         init_nutrition();
         init_user();
 
@@ -92,6 +70,17 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("error");
             e.printStackTrace();
         }
+
+        String path1 = getFilesDir().getAbsolutePath() + "/SubPhonenumbers.json";
+        File file1 = new File(path1);
+        try {
+            FileOutputStream fos = new FileOutputStream(file1, true);
+        } catch (FileNotFoundException e) {
+            System.out.println("error");
+            e.printStackTrace();
+        }
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         String json = null;
@@ -116,6 +105,67 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        json = null;
+        try {
+            InputStream is = getApplicationContext().openFileInput("SubPhonenumbers.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+            JSONArray contactArray = jsonObject.getJSONArray("Contacts");
+            for (int i = 0; i < contactArray.length(); i++) {
+                jsonObject = contactArray.getJSONObject(i);
+                sub_phonenumbers.add(new Phonenumber(jsonObject.getString("name"), jsonObject.getString("number")));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        while (!CheckPermission(getApplicationContext(), permissons[0]))
+        {
+            RequestPermission(this, permissons, REQUEST_RUNTIME_PERMISSION);
+        }
+
+        if (sub_phonenumbers.size() == 0) {
+            JSONObject jsonObject5 = new JSONObject();
+            JSONArray newArray = new JSONArray();
+            try {
+                for (int i = 0; i <5; i++) {
+                    JSONObject jsonObject1 = new JSONObject();
+                    try {
+                        jsonObject1.put("name", "밥"+i);
+                        jsonObject1.put("kcal", "310kcal");
+                        jsonObject1.put("num", "0");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    newArray.put(jsonObject1);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                jsonObject5.put("Foods", newArray);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            String filename = "Foods.json";
+            try {
+                try (FileOutputStream fos = getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE)) {
+                    fos.write(jsonObject5.toString().getBytes());
+                    fos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
         viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(sectionsPagerAdapter);
@@ -180,39 +230,41 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         String newName = nameEditText.getText().toString();
                         String newNunmber = numberEditText.getText().toString();
-                        phonenumbers.add(new Phonenumber(newName, newNunmber));
-                        ((PhoneNumberFragment) getSupportFragmentManager().findFragmentByTag("android:switcher:" + viewPager.getId() + ":" + sectionsPagerAdapter.getItemId(0))).refresh();
+                        if (newName.length() != 0 && newNunmber.length()!=0) {
+                            phonenumbers.add(new Phonenumber(newName, newNunmber));
+                            ((PhoneNumberFragment) getSupportFragmentManager().findFragmentByTag("android:switcher:" + viewPager.getId() + ":" + sectionsPagerAdapter.getItemId(0))).refresh();
 
-                        JSONObject jsonObject5 = new JSONObject();
-                        JSONArray newArray = new JSONArray();
-                        try {
-                            for (int i = 0; i < phonenumbers.size(); i++) {
-                                JSONObject jsonObject1 = new JSONObject();
-                                try {
-                                    jsonObject1.put("name", phonenumbers.get(i).getName());
-                                    jsonObject1.put("number", phonenumbers.get(i).getNumber());
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
+                            JSONObject jsonObject5 = new JSONObject();
+                            JSONArray newArray = new JSONArray();
+                            try {
+                                for (int i = 0; i < phonenumbers.size(); i++) {
+                                    JSONObject jsonObject1 = new JSONObject();
+                                    try {
+                                        jsonObject1.put("name", phonenumbers.get(i).getName());
+                                        jsonObject1.put("number", phonenumbers.get(i).getNumber());
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    newArray.put(jsonObject1);
                                 }
-                                newArray.put(jsonObject1);
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            jsonObject5.put("Contacts", newArray);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                            try {
+                                jsonObject5.put("Contacts", newArray);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
 
-                        String filename = "Phonenumbers.json";
-                        try {
-                            try (FileOutputStream fos = getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE)) {
-                                fos.write(jsonObject5.toString().getBytes());
-                                fos.close();
+                            String filename = "Phonenumbers.json";
+                            try {
+                                try (FileOutputStream fos = getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE)) {
+                                    fos.write(jsonObject5.toString().getBytes());
+                                    fos.close();
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
-                        } catch (IOException e) {
-                            e.printStackTrace();
                         }
                     }
                 });
@@ -303,5 +355,26 @@ public class MainActivity extends AppCompatActivity {
     }
     public void setIsFocused(boolean isFocused){
         this.isFocused = isFocused;
+    }
+    public boolean CheckPermission(Context context, String Permission) {
+        if (ContextCompat.checkSelfPermission(context,
+                Permission) == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void RequestPermission(Activity thisActivity, String[] Permission, int Code) {
+        if (ContextCompat.checkSelfPermission(thisActivity,
+                Permission[0])
+                != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(thisActivity,
+                    Permission[0])) {
+            } else {
+                ActivityCompat.requestPermissions(thisActivity, Permission,
+                        Code);
+            }
+        }
     }
 }

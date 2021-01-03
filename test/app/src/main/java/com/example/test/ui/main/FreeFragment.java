@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +15,13 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
 import com.example.test.R;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
@@ -363,6 +366,20 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
         total_kcal += new_kcal;
         if (total_kcal>recommend) {
             nameTextView.setTextColor(Color.RED);
+
+            if (total_kcal>recommend) {
+                nameTextView.setTextColor(Color.RED);
+
+                Toast toast = Toast.makeText(getActivity(), (total_kcal - recommend) + "kcal over..", Toast.LENGTH_SHORT);
+                toast.show();
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        toast.cancel();
+                    }
+                }, 1000);
+            }
         }
         else {
             nameTextView.setTextColor(Color.GREEN);
@@ -530,11 +547,17 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
         dataset.setColors(ColorTemplate.COLORFUL_COLORS);
         lineChart.setData(data);
 
+        LimitLine ll2 = new LimitLine(recommend, "");
+        ll2.setLineWidth(2f);
+        ll2.enableDashedLine(5f, 5f, 0f);//dashed line
+        ll2.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);//Set the position of the label display
+        ll2.setTextSize(10f);
 
         YAxis yLAxis = lineChart.getAxisLeft();
         yLAxis.setTextColor(R.color.white);
         yLAxis.setTextSize(7);
         //yLAxis.setDrawLabels(false);
+        yLAxis.addLimitLine(ll2);
 
         YAxis yRAxis = lineChart.getAxisRight();
         yRAxis.setTextColor(R.color.white);

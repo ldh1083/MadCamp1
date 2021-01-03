@@ -20,9 +20,11 @@
             android:textSize="15dp"/>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="25dp"
             android:layout_gravity="right"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="bottom"
+            >
             <TextView
                 android:text="음식 검색: "
                 android:textSize="20dp"
@@ -30,19 +32,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 />
+
             <EditText
+                android:id="@+id/name_search"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1">
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:includeFontPadding="false"
+                android:gravity="bottom">
             </EditText>
-            <ImageButton
-                android:id="@+id/search_button"
-                android:layout_width="30dp"
-                android:layout_height="match_parent"
-                android:background="@color/white"
-                android:src="@drawable/search"
-                android:scaleType="fitCenter"
-                android:layout_gravity="right"/>
             <ImageButton
                 android:id="@+id/add_food_button"
                 android:layout_width="30dp"
@@ -58,7 +57,8 @@
             android:layout_height="300dp"
             android:overScrollMode="never"
             android:scrollbars="none"
-            android:dividerHeight="0dp" />
+            android:dividerHeight="0dp"
+            android:textFilterEnabled="true"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"

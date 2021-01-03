@@ -6,11 +6,15 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -246,7 +250,7 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
             JSONArray contactArray = jsonObject.getJSONArray("Foods");
             for (int i = 0; i < contactArray.length(); i++) {
                 jsonObject = contactArray.getJSONObject(i);
-                foods.add(new Food(jsonObject.getString("name"), jsonObject.getString("kcal"), jsonObject.getInt("num")));
+                foods.add(new Food(jsonObject.getString("name"), jsonObject.getString("kcal"), jsonObject.getInt("num"), jsonObject.getInt("order")));
                 total_kcal += jsonObject.getInt("num")*Integer.parseInt(foods.get(i).getkcal().substring(0, foods.get(i).getkcal().length()-4));
             }
             if (total_kcal>recommend) {
@@ -273,9 +277,9 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
                 aDialog.setView(layout);
 
                 TextView name = layout.findViewById(R.id.foodname);
-                name.setText(foods.get(position).getName());
+                name.setText(adapter.filteredfoods.get(position).getName());
                 TextView kcal = layout.findViewById(R.id.foodkcal);
-                kcal.setText(foods.get(position).getkcal());
+                kcal.setText(adapter.filteredfoods.get(position).getkcal());
                 TextView carb = layout.findViewById(R.id.carb);
                 carb.setText("탄수화물: "+nutritions.get(position).getCarb()+"g");
                 TextView protein = layout.findViewById(R.id.protein);
@@ -294,21 +298,8 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
         });
 
         lineChart = (LineChart) view.findViewById(R.id.chart);
-
-        entries.add(new Entry(4f, 0));
-        entries.add(new Entry(8f, 1));
-        entries.add(new Entry(6f, 2));
-        entries.add(new Entry(2f, 3));
-        entries.add(new Entry(18f, 4));
-        labels.add("January");
-        labels.add("February");
-        labels.add("March");
-        labels.add("April");
-        labels.add("May");
         dataset = new LineDataSet(entries, "day");
-        dataset.setColors(ColorTemplate.COLORFUL_COLORS);
         data = new LineData(labels, dataset);
-        data.setValueTextSize(40f);
         lineChart.setData(data);
         lineChart.setDescription("");
         //lineChart.animateY(5000);
@@ -358,6 +349,34 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
         }
         drawgraph();
         nameTextView.setText("오늘 칼로리: "+total_kcal);
+
+        EditText editTextFilter = (EditText)view.findViewById(R.id.name_search) ;
+        editTextFilter.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable edit) {
+                String filterText = edit.toString() ;
+                ((FreeAdaptor)listView.getAdapter()).getFilter().filter(filterText) ;
+            }
+        });
+
+        ImageButton ib_add_food = (ImageButton) view.findViewById(R.id.add_food_button);
+        ib_add_food.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
         return view;
     }
 

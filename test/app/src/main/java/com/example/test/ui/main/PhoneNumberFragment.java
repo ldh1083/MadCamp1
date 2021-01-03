@@ -278,6 +278,37 @@ public class PhoneNumberFragment extends Fragment  {
         if(cur!=null){
             cur.close();
         }
+        JSONObject jsonObject50 = new JSONObject();
+        JSONArray newArray0 = new JSONArray();
+        try {
+            for (int i = 0; i < phonenumbers.size(); i++) {
+                JSONObject jsonObject1 = new JSONObject();
+                try {
+                    jsonObject1.put("name", phonenumbers.get(i).getName());
+                    jsonObject1.put("number", phonenumbers.get(i).getNumber());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                newArray0.put(jsonObject1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            jsonObject50.put("Contacts", newArray0);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String filename0 = "Phonenumbers.json";
+        try {
+            try (FileOutputStream fos = getContext().openFileOutput(filename0, Context.MODE_PRIVATE)) {
+                fos.write(jsonObject50.toString().getBytes());
+                fos.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

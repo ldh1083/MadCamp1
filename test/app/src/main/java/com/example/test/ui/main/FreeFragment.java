@@ -486,6 +486,7 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
         yLAxis.setTextColor(R.color.white);
         yLAxis.setTextSize(7);
         //yLAxis.setDrawLabels(false);
+        yLAxis.removeAllLimitLines();
         yLAxis.addLimitLine(ll2);
 
         YAxis yRAxis = lineChart.getAxisRight();

@@ -91,7 +91,6 @@ public class PhoneNumberFragment extends Fragment  {
         {
             if (CheckPermission(getContext(), permissons[0])) {
                 // you have permission go ahead
-                System.out.println("1");
                 read_contact();
             } else {
                 // you do not have permission go request runtime permissions

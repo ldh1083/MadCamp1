@@ -217,7 +217,7 @@ public class PhoneNumberFragment extends Fragment  {
                         switch (item.getItemId()){
                             case R.id.new_game:
                                 Toast.makeText((MainActivity)getContext(), "save", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse("tel:1588-3468")));
+                                startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"+phonenumbers.get(position).getNumber())));
                         }
                         return false;
                     }

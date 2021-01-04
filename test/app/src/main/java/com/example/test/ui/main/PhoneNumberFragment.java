@@ -333,6 +333,7 @@ public class PhoneNumberFragment extends Fragment  {
                                 ContactsContract.CommonDataKinds.Phone.NUMBER));
 
                         phonenumbers.add(new Phonenumber(name, phoneNo));
+
                         adapter.notifyDataSetChanged();
                     }
                     pCur.close();

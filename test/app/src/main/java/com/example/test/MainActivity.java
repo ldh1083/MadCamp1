@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText numberEditText = null;
     CustomViewPager viewPager;
     private boolean isFocused;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         phonenumbers = new ArrayList<>();
@@ -246,6 +247,7 @@ public class MainActivity extends AppCompatActivity {
 
                         if (newName.length() != 0 && newNunmber.length()!=0) {
                             phonenumbers.add(new Phonenumber(newName, newNunmber));
+                            //sort phonenumbers
                             ((PhoneNumberFragment) getSupportFragmentManager().findFragmentByTag("android:switcher:" + viewPager.getId() + ":" + sectionsPagerAdapter.getItemId(0))).refresh();
 
                             JSONObject jsonObject5 = new JSONObject();

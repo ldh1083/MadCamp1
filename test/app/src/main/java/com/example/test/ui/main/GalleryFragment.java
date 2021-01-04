@@ -1,13 +1,22 @@
 package com.example.test.ui.main;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.ParcelFileDescriptor;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
@@ -16,7 +25,13 @@ import com.example.test.MainActivity;
 import com.example.test.ui.main.CustomViewPager;
 import com.example.test.R;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 
 public class GalleryFragment extends Fragment implements MainActivity.OnBackPressedListener {
@@ -24,6 +39,7 @@ public class GalleryFragment extends Fragment implements MainActivity.OnBackPres
     private CustomViewPager viewPager;
     private ScrollView sv;
     private GalleryAdaptor gelleryAdapter;
+    private ImageButton focus_button;
     public static GalleryFragment newInstance(int index) {
         GalleryFragment fragment = new GalleryFragment();
         Bundle bundle = new Bundle();
@@ -36,6 +52,7 @@ public class GalleryFragment extends Fragment implements MainActivity.OnBackPres
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.gallery_fragment, container, false);
         sv = (ScrollView) view.findViewById(R.id.main_frame);
+        focus_button = (ImageButton) view.findViewById(R.id.share_icon);
         ArrayList<ImageView> images = new ArrayList<>();
         ImageView iv;
         for(int i=0; i<10;i++){
@@ -97,15 +114,82 @@ public class GalleryFragment extends Fragment implements MainActivity.OnBackPres
                 //sv.setVisibility(View.VISIBLE);
             }
         });
+        focus_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    shareImage();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         return view;
     }
+
+    public void shareImage() throws IOException {
+       /* Uri imageUri = null;
+        try {
+            imageUri = Uri.parse(MediaStore.Images.Media.insertImage(getActivity().getContentResolver(),
+                    BitmapFactory.decodeResource(getResources(), R.drawable.img1), null, null));
+        } catch (Exception e) { System.out.println(e.toString()); }*/
+        System.out.println("image1 write0");
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.ex);
+
+        File outputFile = new File(getContext().getCacheDir(), "example.png");
+        FileOutputStream outPutStream = new FileOutputStream(outputFile);
+        bm.compress(Bitmap.CompressFormat.PNG, 100, outPutStream);
+        outPutStream.flush();
+        outPutStream.close();
+        outputFile.setReadable(true, false);
+
+//        String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
+//        File file = new File(extStorageDirectory, "example.PNG");
+//        FileOutputStream outStream = new FileOutputStream(file);
+//        bm.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+//        outStream.flush();
+//        outStream.close();
+//        System.out.println("image1 write");
+        /*
+        FileChannel inChannel = new FileInputStream(src).getChannel();
+        FileChannel outChannel = new FileOutputStream(dst).getChannel();
+        try
+        {
+            inChannel.transferTo(0, inChannel.size(), outChannel);
+        }
+        finally
+        {
+            if (inChannel != null)
+                inChannel.close();
+            if (outChannel != null)
+                outChannel.close();
+        }*/
+//        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+//        Uri imageUri = Uri.parse(getActivity().getExternalCacheDir()+"/example.PNG");
+//        sharingIntent.setType("image/*");
+//        sharingIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
+//        startActivity(Intent.createChooser(sharingIntent, "Share image using"));
+        Uri imageUri = FileProvider.getUriForFile(getContext(), "com.example.test.fileprovider", outputFile);
+        Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
+        shareIntent.setType("image/png");
+        getContext().startActivity(shareIntent);
+    }
     public void back(){
-        this.viewPager.setPagingEnabled(false);
+        /*this.viewPager.setPagingEnabled(false);
         gelleryAdapter = new GalleryAdaptor(getChildFragmentManager(), 1);
         viewPager.setAdapter(gelleryAdapter);
         this.viewPager.setVisibility(View.INVISIBLE);
         this.sv.setVisibility(View.VISIBLE);
-        ((MainActivity) getActivity()).can_scroll(true);
+        ((MainActivity) getActivity()).can_scroll(true);*/
+        //gelleryAdapter = new GalleryAdaptor(getChildFragmentManager(), 1);
+        //viewPager.setAdapter(gelleryAdapter);
+        if(focus_button.getVisibility() == View.INVISIBLE) {
+            focus_button.setVisibility(View.VISIBLE);
+        }
+        else{
+            focus_button.setVisibility(View.INVISIBLE);
+        }
     }
     @Override
     public void onBack(){

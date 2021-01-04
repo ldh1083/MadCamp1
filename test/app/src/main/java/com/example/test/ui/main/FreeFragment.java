@@ -110,18 +110,19 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
                     nameTextView.setTextColor(Color.RED);
                 }
                 else {
-                    nameTextView.setTextColor(Color.GREEN);
+
+                    nameTextView.setTextColor(Color.parseColor("#F81D6115"));
                 }
             }
             else {
                 user_text.setText("이름: " + user.get(0).getName() + ", 성별: 남자" + ", 키: " + user.get(0).getHeight() + ", 몸무게: " + user.get(0).getWeight());
-                recommand_text.setText("권장 칼로리: " + user.get(0).getWeight()*43);
+                recommand_text.setText("권장 칼로리: " + user.get(0).getWeight()*43+"kcal");
                 recommend = user.get(0).getWeight()*43;
                 if (total_kcal>recommend) {
                     nameTextView.setTextColor(Color.RED);
                 }
                 else {
-                    nameTextView.setTextColor(Color.GREEN);
+                    nameTextView.setTextColor(Color.parseColor("#F81D6115"));
                 }
             }
         }
@@ -152,24 +153,24 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
                             TextView user_text = (TextView) v.findViewById(R.id.user_info);
                             if (user.get(0).getGender()){
                                 user_text.setText("이름: " + user.get(0).getName() + ", 성별: 여자" + ", 키: " + user.get(0).getHeight() + ", 몸무게: " + user.get(0).getWeight());
-                                recommand_text.setText("권장 칼로리: " + user.get(0).getWeight()*38);
+                                recommand_text.setText("권장 칼로리: " + user.get(0).getWeight()*38+"kcal");
                                 recommend = user.get(0).getWeight()*38;
                                 if (total_kcal>recommend) {
                                     nameTextView.setTextColor(Color.RED);
                                 }
                                 else {
-                                    nameTextView.setTextColor(Color.GREEN);
+                                    nameTextView.setTextColor(Color.parseColor("#F81D6115"));
                                 }
                             }
                             else {
                                 user_text.setText("이름: " + user.get(0).getName() + ", 성별: 남자" + ", 키: " + user.get(0).getHeight() + ", 몸무게: " + user.get(0).getWeight());
-                                recommand_text.setText("권장 칼로리: " + user.get(0).getWeight()*43);
+                                recommand_text.setText("권장 칼로리: " + user.get(0).getWeight()*43+"kcal");
                                 recommend = user.get(0).getWeight()*43;
                                 if (total_kcal>recommend) {
                                     nameTextView.setTextColor(Color.RED);
                                 }
                                 else {
-                                    nameTextView.setTextColor(Color.GREEN);
+                                    nameTextView.setTextColor(Color.parseColor("#F81D6115"));
                                 }
                             }
                         }
@@ -188,7 +189,7 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
 
         /* get Food.json to foods array and set total calory */
         total_kcal = 0;
-        nameTextView.setTextColor(Color.GREEN);
+        nameTextView.setTextColor(Color.parseColor("#F81D6115"));
         get_food();
         for (int i = 0; i < foods.size(); i++) {
             total_kcal += foods.get(i).getNum()*Integer.parseInt(foods.get(i).getkcal().substring(0, foods.get(i).getkcal().length()-4));
@@ -197,7 +198,7 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
             nameTextView.setTextColor(Color.RED);
         }
         else {
-            nameTextView.setTextColor(Color.GREEN);
+            nameTextView.setTextColor(Color.parseColor("#F81D6115"));
         }
 
         /* init listView */
@@ -272,7 +273,7 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
         }
         drawgraph(); // 그래프를 그리는 함수
 
-        nameTextView.setText("오늘 칼로리: "+total_kcal);
+        nameTextView.setText("오늘 칼로리: "+total_kcal+"kcal");
 
         /* 음식 검색: "" 부분에 텍스트를 입력하면 그 문자열을 포함하고 있는 음식만 listview에 보여준다. */
         EditText editTextFilter = (EditText)view.findViewById(R.id.name_search) ;
@@ -290,7 +291,7 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
             @Override
             public void afterTextChanged(Editable edit) {
                 String filterText = edit.toString() ;
-                ((FreeAdaptor)listView.getAdapter()).getFilter().filter(filterText) ;
+                ((FreeAdaptor)listView.getAdapter()).getFilter().filter(filterText);
             }
         });
 
@@ -372,9 +373,9 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
             }
         }
         else {
-            nameTextView.setTextColor(Color.GREEN);
+            nameTextView.setTextColor(Color.parseColor("#F81D6115"));
         }
-        nameTextView.setText("오늘 칼로리: "+total_kcal);
+        nameTextView.setText("오늘 칼로리: "+total_kcal+"kcal");
         days.get(days.size()-1).setkcal(total_kcal);
     }
 
@@ -395,7 +396,7 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
         }
         write_day();
         total_kcal = 0;
-        nameTextView.setTextColor(Color.GREEN);
+        nameTextView.setTextColor(Color.parseColor("#F81D6115"));
         write_food(true);
 
         for(int i=0; i<foods.size();i++)

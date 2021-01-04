@@ -14,6 +14,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,6 +40,7 @@ import org.json.JSONObject;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collections;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 import static com.example.test.MainActivity.phonenumbers;
@@ -49,6 +52,7 @@ public class PhoneNumberFragment extends Fragment  {
     String[] permissons = {Manifest.permission.READ_CONTACTS};
     private EditText nameEditText = null;
     private EditText numberEditText = null;
+    EditText editTextFilter = null;
     private ListView listView;
     PhonenumberAdapter adapter;
     public static PhoneNumberFragment newInstance(int index) {
@@ -98,7 +102,7 @@ public class PhoneNumberFragment extends Fragment  {
             }
         }
 
-
+        editTextFilter = (EditText)view.findViewById(R.id.name_search) ;
         listView.setOnItemLongClickListener(new  AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -109,8 +113,8 @@ public class PhoneNumberFragment extends Fragment  {
                 aDialog.setView(layout);
                 nameEditText = layout.findViewById(R.id.name);
                 numberEditText = layout.findViewById(R.id.number);
-                nameEditText.setText(((MainActivity) getActivity()).phonenumbers.get(position).getName());
-                numberEditText.setText(((MainActivity) getActivity()).phonenumbers.get(position).getNumber());
+                nameEditText.setText(adapter.filteredphonenumbers.get(position).getName());
+                numberEditText.setText(adapter.filteredphonenumbers.get(position).getNumber());
 
                 aDialog.setPositiveButton("취소", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -118,6 +122,7 @@ public class PhoneNumberFragment extends Fragment  {
                 });
                 aDialog.setNegativeButton("수정", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        editTextFilter.setText("");
                         String newName = nameEditText.getText().toString();
                         String newNunmber = numberEditText.getText().toString();
 
@@ -126,8 +131,25 @@ public class PhoneNumberFragment extends Fragment  {
                                 null, null, null, null);
                         if ((cur != null ? cur.getCount() : 0) > 0) {
                             while (cur != null && cur.moveToNext()) {
-                                String name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-                                if (name.equalsIgnoreCase(phonenumbers.get(position).getName()))
+                                String id = cur.getString(
+                                        cur.getColumnIndex(ContactsContract.Contacts._ID));
+                                String phoneNo = null;
+                                if (cur.getInt(cur.getColumnIndex(
+                                        ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
+                                    Cursor pCur = cr.query(
+                                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                                            null,
+                                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                                            new String[]{id}, null);
+                                    while (pCur.moveToNext()) {
+                                        phoneNo = pCur.getString(pCur.getColumnIndex(
+                                                ContactsContract.CommonDataKinds.Phone.NUMBER));
+                                        phoneNo = phoneNo.replaceAll("-", "");
+                                    }
+                                    pCur.close();
+                                }
+
+                                if (phoneNo.equalsIgnoreCase(adapter.filteredphonenumbers.get(position).getNumber()))
                                 {
                                     String lookupKey = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
                                     Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
@@ -146,8 +168,29 @@ public class PhoneNumberFragment extends Fragment  {
                         startActivity(intent);
 
                         if (newName.length() != 0 && newNunmber.length()!=0) {
-                            ((MainActivity) getActivity()).phonenumbers.get(position).setName(newName);
-                            ((MainActivity) getActivity()).phonenumbers.get(position).setNumber(newNunmber);
+                            int order = adapter.filteredphonenumbers.get(position).getOrder();
+                            for(int i=0; i<phonenumbers.size(); i++) {
+                                if (phonenumbers.get(i).getOrder() == order) {
+                                    ((MainActivity) getActivity()).phonenumbers.get(i).setName(newName);
+                                    ((MainActivity) getActivity()).phonenumbers.get(i).setNumber(newNunmber);
+                                    break;
+                                }
+                            }
+                            Collections.sort(phonenumbers);
+                            for(int i=0; i<phonenumbers.size();i++) {
+                                for (int j=0; j<adapter.filteredphonenumbers.size(); j++)
+                                {
+                                    if (adapter.filteredphonenumbers.get(j).getOrder()==phonenumbers.get(i).getOrder()) {
+                                        adapter.filteredphonenumbers.get(j).setOrder(i);
+                                        break;
+                                    }
+                                }
+                            }
+                            Collections.sort(adapter.filteredphonenumbers);
+                            for(int i=0; i<phonenumbers.size();i++) {
+                                phonenumbers.get(i).setOrder(i);
+                            }
+
                             adapter.notifyDataSetChanged();
 
                             JSONObject jsonObject5 = new JSONObject();
@@ -158,6 +201,7 @@ public class PhoneNumberFragment extends Fragment  {
                                     try {
                                         jsonObject1.put("name", phonenumbers.get(i).getName());
                                         jsonObject1.put("number", phonenumbers.get(i).getNumber());
+                                        jsonObject1.put("order", phonenumbers.get(i).getOrder());
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
@@ -191,8 +235,25 @@ public class PhoneNumberFragment extends Fragment  {
                                 null, null, null, null);
                         if ((cur != null ? cur.getCount() : 0) > 0) {
                             while (cur != null && cur.moveToNext()) {
-                                String name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-                                if (name.equalsIgnoreCase(phonenumbers.get(position).getName()))
+                                String id = cur.getString(
+                                        cur.getColumnIndex(ContactsContract.Contacts._ID));
+                                String phoneNo = null;
+                                if (cur.getInt(cur.getColumnIndex(
+                                        ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
+                                    Cursor pCur = cr.query(
+                                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                                            null,
+                                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                                            new String[]{id}, null);
+                                    while (pCur.moveToNext()) {
+                                        phoneNo = pCur.getString(pCur.getColumnIndex(
+                                                ContactsContract.CommonDataKinds.Phone.NUMBER));
+                                        phoneNo = phoneNo.replaceAll("-", "");
+                                    }
+                                    pCur.close();
+                                }
+
+                                if (phoneNo.equalsIgnoreCase(adapter.filteredphonenumbers.get(position).getNumber()))
                                 {
                                     String lookupKey = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
                                     Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
@@ -200,7 +261,25 @@ public class PhoneNumberFragment extends Fragment  {
                                 }
                             }
                         }
-                        ((MainActivity) getActivity()).phonenumbers.remove(position);
+
+                        int order = adapter.filteredphonenumbers.get(position).getOrder();
+                        if (adapter.filteredphonenumbers.size() == phonenumbers.size()) {
+                            for (int i = 0; i < phonenumbers.size(); i++) {
+                                if (phonenumbers.get(i).getOrder() == order) {
+                                    ((MainActivity) getActivity()).phonenumbers.remove(i);
+                                    break;
+                                }
+                            }
+                        }
+                        else {
+                            for (int i = 0; i < phonenumbers.size(); i++) {
+                                if (phonenumbers.get(i).getOrder() == order) {
+                                    ((MainActivity) getActivity()).phonenumbers.remove(i);
+                                    break;
+                                }
+                            }
+                            adapter.filteredphonenumbers.remove(position);
+                        }
                         adapter.notifyDataSetChanged();
                         JSONObject jsonObject5 = new JSONObject();
                         JSONArray newArray = new JSONArray();
@@ -210,6 +289,7 @@ public class PhoneNumberFragment extends Fragment  {
                                 try {
                                     jsonObject1.put("name", phonenumbers.get(i).getName());
                                     jsonObject1.put("number", phonenumbers.get(i).getNumber());
+                                    jsonObject1.put("order", phonenumbers.get(i).getOrder());
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -262,6 +342,26 @@ public class PhoneNumberFragment extends Fragment  {
                 popupMenu.show();
             }
         });
+
+
+        editTextFilter.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable edit) {
+                String filterText = edit.toString() ;
+                ((PhonenumberAdapter)listView.getAdapter()).getFilter().filter(filterText) ;
+            }
+        });
+
         return view;
     }
 
@@ -274,20 +374,26 @@ public class PhoneNumberFragment extends Fragment  {
     }*/
 
     public void refresh(){
+        if (phonenumbers.size() != adapter.filteredphonenumbers.size()) {
+            adapter.filteredphonenumbers.add(phonenumbers.get(phonenumbers.size() - 1));
+        }
         adapter.notifyDataSetChanged();
+        editTextFilter.setText("");
         //listView.setAdapter(adapter);
     }
 
 
     private void read_contact() {
-        sub_phonenumbers.add(new Phonenumber("dummy", "dummy"));
+        sub_phonenumbers.add(new Phonenumber("dummy", "dummy", 0));
         JSONObject jsonObject5 = new JSONObject();
         JSONArray newArray = new JSONArray();
+        int j=0;
         try {
             JSONObject jsonObject1 = new JSONObject();
             try {
                 jsonObject1.put("name", sub_phonenumbers.get(0).getName());
                 jsonObject1.put("number", sub_phonenumbers.get(0).getNumber());
+                jsonObject1.put("order",0);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -331,9 +437,10 @@ public class PhoneNumberFragment extends Fragment  {
                     while (pCur.moveToNext()) {
                         String phoneNo = pCur.getString(pCur.getColumnIndex(
                                 ContactsContract.CommonDataKinds.Phone.NUMBER));
-
-                        phonenumbers.add(new Phonenumber(name, phoneNo));
+                        System.out.println(j);
+                        phonenumbers.add(new Phonenumber(name, phoneNo, j));
                         adapter.notifyDataSetChanged();
+                        j++;
                     }
                     pCur.close();
                 }
@@ -341,6 +448,10 @@ public class PhoneNumberFragment extends Fragment  {
         }
         if(cur!=null){
             cur.close();
+        }
+        Collections.sort(phonenumbers);
+        for(int i=0; i<phonenumbers.size();i++) {
+            phonenumbers.get(i).setOrder(i);
         }
         JSONObject jsonObject50 = new JSONObject();
         JSONArray newArray0 = new JSONArray();
@@ -350,6 +461,7 @@ public class PhoneNumberFragment extends Fragment  {
                 try {
                     jsonObject1.put("name", phonenumbers.get(i).getName());
                     jsonObject1.put("number", phonenumbers.get(i).getNumber());
+                    jsonObject1.put("order", phonenumbers.get(i).getOrder());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

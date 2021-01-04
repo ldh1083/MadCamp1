@@ -220,10 +220,10 @@ public class FreeAdaptor extends ArrayAdapter<Food> implements Filterable {
     public Food getItem(int position) {
         return filteredfoods.get(position) ;
     }
-    @Override
+/*    @Override
     public long getItemId(int position) {
         return position ;
-    }
+    }*/
 
     @Override
     public Filter getFilter() {

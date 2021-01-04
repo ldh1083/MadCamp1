@@ -12,19 +12,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <TextView
-            android:id="@+id/user_info"
-            android:layout_width="match_parent"
-            android:layout_height="25dp"
-            android:text="사용자 정보: 길게 눌러서 설정하세요"
-            android:textSize="15dp"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="25dp"
             android:layout_gravity="right"
             android:orientation="horizontal"
             android:gravity="bottom"
-            >
+            android:background="#1B000000">
             <TextView
                 android:text="음식 검색: "
                 android:textSize="20dp"
@@ -51,14 +46,25 @@
                 android:scaleType="fitCenter"
                 android:layout_gravity="right"/>
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="10dp">
+        </LinearLayout>
         <ListView
             android:id="@+id/food_list"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="250dp"
             android:overScrollMode="never"
             android:scrollbars="none"
             android:dividerHeight="0dp"
             android:textFilterEnabled="true"/>
+        <TextView
+            android:id="@+id/user_info"
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:text="사용자 정보: 길게 눌러서 설정하세요"
+            android:textSize="15dp"
+            android:textColor="@color/design_default_color_primary"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"

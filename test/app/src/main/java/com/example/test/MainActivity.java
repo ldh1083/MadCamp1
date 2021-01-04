@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
@@ -101,7 +102,11 @@ public class MainActivity extends AppCompatActivity {
             JSONArray contactArray = jsonObject.getJSONArray("Contacts");
             for (int i = 0; i < contactArray.length(); i++) {
                 jsonObject = contactArray.getJSONObject(i);
-                phonenumbers.add(new Phonenumber(jsonObject.getString("name"), jsonObject.getString("number")));
+                phonenumbers.add(new Phonenumber(jsonObject.getString("name"), jsonObject.getString("number"), jsonObject.getInt("order")));
+            }
+            Collections.sort(phonenumbers);
+            for(int i=0; i<phonenumbers.size();i++) {
+                phonenumbers.get(i).setOrder(i);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -123,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
             JSONArray contactArray = jsonObject.getJSONArray("Contacts");
             for (int i = 0; i < contactArray.length(); i++) {
                 jsonObject = contactArray.getJSONObject(i);
-                sub_phonenumbers.add(new Phonenumber(jsonObject.getString("name"), jsonObject.getString("number")));
+                sub_phonenumbers.add(new Phonenumber(jsonObject.getString("name"), jsonObject.getString("number"), 0));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -245,7 +250,11 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intent);
 
                         if (newName.length() != 0 && newNunmber.length()!=0) {
-                            phonenumbers.add(new Phonenumber(newName, newNunmber));
+                            phonenumbers.add(new Phonenumber(newName, newNunmber, phonenumbers.get(phonenumbers.size()-1).getOrder()+1));
+                            Collections.sort(phonenumbers);
+                            for(int i=0; i<phonenumbers.size();i++) {
+                                phonenumbers.get(i).setOrder(i);
+                            }
                             ((PhoneNumberFragment) getSupportFragmentManager().findFragmentByTag("android:switcher:" + viewPager.getId() + ":" + sectionsPagerAdapter.getItemId(0))).refresh();
 
                             JSONObject jsonObject5 = new JSONObject();
@@ -256,6 +265,7 @@ public class MainActivity extends AppCompatActivity {
                                     try {
                                         jsonObject1.put("name", phonenumbers.get(i).getName());
                                         jsonObject1.put("number", phonenumbers.get(i).getNumber());
+                                        jsonObject1.put("order", phonenumbers.get(i).getOrder());
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }

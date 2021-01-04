@@ -248,7 +248,7 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
                 });
                 AlertDialog ad = aDialog.create();
                 ad.show();
-                return false;
+                return true;
             }
         });
 

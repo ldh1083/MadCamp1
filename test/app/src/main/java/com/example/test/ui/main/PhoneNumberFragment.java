@@ -237,7 +237,7 @@ public class PhoneNumberFragment extends Fragment  {
                 });
                 AlertDialog ad = aDialog.create();
                 ad.show();
-            return false;
+            return true;
             }
 
         });

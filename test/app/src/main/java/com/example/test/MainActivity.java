@@ -5,10 +5,12 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     public static ArrayList<Phonenumber> phonenumbers = new ArrayList<>();
     public static ArrayList<Phonenumber> sub_phonenumbers = new ArrayList<>();
     private static final int REQUEST_RUNTIME_PERMISSION = 123;
-    String[] permissons = {Manifest.permission.READ_CONTACTS};
+    String[] permissons = {Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS};
     private EditText nameEditText = null;
     private EditText numberEditText = null;
     CustomViewPager viewPager;
@@ -127,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        while (!CheckPermission(getApplicationContext(), permissons[0]))
+        while (!CheckPermission(getApplicationContext(), permissons[0]) || !CheckPermission(getApplicationContext(), permissons[1]))
         {
             RequestPermission(this, permissons, REQUEST_RUNTIME_PERMISSION);
         }
@@ -232,6 +234,16 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         String newName = nameEditText.getText().toString();
                         String newNunmber = numberEditText.getText().toString();
+
+                        Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
+                        intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
+                        intent.putExtra(ContactsContract.Intents.Insert.NAME, newName)
+                                .putExtra(ContactsContract.Intents.Insert.EMAIL, ContactsContract.CommonDataKinds.Email.TYPE_WORK)
+                                .putExtra(ContactsContract.Intents.Insert.EMAIL_TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK)
+                                .putExtra(ContactsContract.Intents.Insert.PHONE, newNunmber)
+                                .putExtra(ContactsContract.Intents.Insert.PHONE_TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_WORK);
+                        startActivity(intent);
+
                         if (newName.length() != 0 && newNunmber.length()!=0) {
                             phonenumbers.add(new Phonenumber(newName, newNunmber));
                             ((PhoneNumberFragment) getSupportFragmentManager().findFragmentByTag("android:switcher:" + viewPager.getId() + ":" + sectionsPagerAdapter.getItemId(0))).refresh();

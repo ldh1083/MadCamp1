@@ -6,8 +6,10 @@ import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -116,6 +118,31 @@ public class PhoneNumberFragment extends Fragment  {
                     public void onClick(DialogInterface dialog, int which) {
                         String newName = nameEditText.getText().toString();
                         String newNunmber = numberEditText.getText().toString();
+
+                        ContentResolver cr = getActivity().getContentResolver();
+                        Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
+                                null, null, null, null);
+                        if ((cur != null ? cur.getCount() : 0) > 0) {
+                            while (cur != null && cur.moveToNext()) {
+                                String name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                                if (name.equalsIgnoreCase(phonenumbers.get(position).getName()))
+                                {
+                                    String lookupKey = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+                                    Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
+                                    cr.delete(uri, null, null);
+                                }
+                            }
+                        }
+
+                        Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
+                        intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
+                        intent.putExtra(ContactsContract.Intents.Insert.NAME, newName)
+                                .putExtra(ContactsContract.Intents.Insert.EMAIL, ContactsContract.CommonDataKinds.Email.TYPE_WORK)
+                                .putExtra(ContactsContract.Intents.Insert.EMAIL_TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK)
+                                .putExtra(ContactsContract.Intents.Insert.PHONE, newNunmber)
+                                .putExtra(ContactsContract.Intents.Insert.PHONE_TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_WORK);
+                        startActivity(intent);
+
                         if (newName.length() != 0 && newNunmber.length()!=0) {
                             ((MainActivity) getActivity()).phonenumbers.get(position).setName(newName);
                             ((MainActivity) getActivity()).phonenumbers.get(position).setNumber(newNunmber);
@@ -157,6 +184,20 @@ public class PhoneNumberFragment extends Fragment  {
                 });
                 aDialog.setNeutralButton("삭제", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        ContentResolver cr = getActivity().getContentResolver();
+                        Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
+                                null, null, null, null);
+                        if ((cur != null ? cur.getCount() : 0) > 0) {
+                            while (cur != null && cur.moveToNext()) {
+                                String name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                                if (name.equalsIgnoreCase(phonenumbers.get(position).getName()))
+                                {
+                                    String lookupKey = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+                                    Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
+                                    cr.delete(uri, null, null);
+                                }
+                            }
+                        }
                         ((MainActivity) getActivity()).phonenumbers.remove(position);
                         adapter.notifyDataSetChanged();
                         JSONObject jsonObject5 = new JSONObject();
@@ -198,6 +239,7 @@ public class PhoneNumberFragment extends Fragment  {
             }
 
         });
+
         return view;
     }
 

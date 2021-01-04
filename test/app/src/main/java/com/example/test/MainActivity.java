@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         phonenumbers = new ArrayList<>();
         sub_phonenumbers = new ArrayList<>();
 
-        init_nutrition();
+
         init_user();
 
         String path = getFilesDir().getAbsolutePath() + "/Phonenumbers.json";
@@ -133,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (sub_phonenumbers.size() == 0) {
+            init_nutrition();
             JSONObject jsonObject5 = new JSONObject();
             JSONArray newArray = new JSONArray();
             try {
@@ -142,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                         jsonObject1.put("name", "밥"+i);
                         jsonObject1.put("kcal", "310kcal");
                         jsonObject1.put("num", "0");
-                        jsonObject1.put("order", i);
+                        jsonObject1.put("order", Integer.toString(i));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -300,6 +301,7 @@ public class MainActivity extends AppCompatActivity {
                     jsonObject1.put("carb", "43");
                     jsonObject1.put("protein", "25");
                     jsonObject1.put("fat", "10");
+                    jsonObject1.put("order", "i");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

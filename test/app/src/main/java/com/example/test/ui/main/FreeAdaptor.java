@@ -177,6 +177,7 @@ public class FreeAdaptor extends ArrayAdapter<Food> implements Filterable {
                                 jsonObject1.put("name", foods.get(i).getName());
                                 jsonObject1.put("kcal", foods.get(i).getkcal());
                                 jsonObject1.put("num", foods.get(i).getNum());
+                                jsonObject1.put("order", foods.get(i).getOrder());
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }

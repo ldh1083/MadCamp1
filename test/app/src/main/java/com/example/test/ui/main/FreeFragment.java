@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.test.MainActivity;
 import com.example.test.R;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.LimitLine;
@@ -185,40 +186,6 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
                                 }
                             }
                         }
-                        /*phonenumbers.add(new Phonenumber(newName, newNunmber));
-                        ((PhoneNumberFragment) getSupportFragmentManager().findFragmentByTag("android:switcher:" + viewPager.getId() + ":" + sectionsPagerAdapter.getItemId(0))).refresh();
-
-                        JSONObject jsonObject5 = new JSONObject();
-                        JSONArray newArray = new JSONArray();
-                        try {
-                            for (int i = 0; i < phonenumbers.size(); i++) {
-                                JSONObject jsonObject1 = new JSONObject();
-                                try {
-                                    jsonObject1.put("name", phonenumbers.get(i).getName());
-                                    jsonObject1.put("number", phonenumbers.get(i).getNumber());
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                                newArray.put(jsonObject1);
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            jsonObject5.put("Contacts", newArray);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        String filename = "Phonenumbers.json";
-                        try {
-                            try (FileOutputStream fos = getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE)) {
-                                fos.write(jsonObject5.toString().getBytes());
-                                fos.close();
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }*/
                     }
                 });
                 aDialog.setNegativeButton("취소", new DialogInterface.OnClickListener() {
@@ -280,12 +247,20 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
                 name.setText(adapter.filteredfoods.get(position).getName());
                 TextView kcal = layout.findViewById(R.id.foodkcal);
                 kcal.setText(adapter.filteredfoods.get(position).getkcal());
+
+                int origin_position = -1;
+                for (int i=0; i<foods.size(); i++) {
+                    if (adapter.filteredfoods.get(position).getOrder() == foods.get(i).getOrder()) {
+                        origin_position = i;
+                        break;
+                    }
+                }
                 TextView carb = layout.findViewById(R.id.carb);
-                carb.setText("탄수화물: "+nutritions.get(position).getCarb()+"g");
+                carb.setText("탄수화물: "+nutritions.get(origin_position).getCarb()+"g");
                 TextView protein = layout.findViewById(R.id.protein);
-                protein.setText("단백질: "+nutritions.get(position).getProtein()+"g");
+                protein.setText("단백질: "+nutritions.get(origin_position).getProtein()+"g");
                 TextView fat = layout.findViewById(R.id.fat);
-                fat.setText("지방: "+nutritions.get(position).getFat()+"g");
+                fat.setText("지방: "+nutritions.get(origin_position).getFat()+"g");
                 aDialog.setPositiveButton("취소", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                     }
@@ -373,7 +348,117 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
         ib_add_food.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                View layout = inflater.inflate(R.layout.add_food_menu, (ViewGroup) view.findViewById(R.id.layout_root));
+                AlertDialog.Builder aDialog = new AlertDialog.Builder(getContext());
+                aDialog.setTitle("음식 메뉴 추가");
+                aDialog.setView(layout);
 
+                EditText nameEditText = layout.findViewById(R.id.name);
+                EditText kcalEditText = layout.findViewById(R.id.kcal);
+                EditText carbEditText = layout.findViewById(R.id.carb);
+                EditText proteinEditText = layout.findViewById(R.id.protein);
+                EditText fatEditText = layout.findViewById(R.id.fat);
+
+                aDialog.setPositiveButton("취소", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+
+                aDialog.setNegativeButton("저장", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        String newName = nameEditText.getText().toString();
+                        String newkcal = kcalEditText.getText().toString();
+                        String newcarb = carbEditText.getText().toString();
+                        String newprotein = proteinEditText.getText().toString();
+                        String newfat = fatEditText.getText().toString();
+
+
+                        if (newName.length() != 0 && newkcal.length()!=0) {
+                            foods.add(new Food(newName, newkcal+"kcal", 0, foods.get(foods.size()-1).getOrder()+1));
+                            if (newcarb.length() == 0) {
+                                newcarb = "0";
+                            }
+                            if (newprotein.length() == 0) {
+                                newprotein = "0";
+                            }
+                            if (newfat.length() == 0) {
+                                newfat = "0";
+                            }
+                            nutritions.add(new Nutrition(Integer.parseInt(newcarb), Integer.parseInt(newprotein), Integer.parseInt(newfat)));
+                            adapter.notifyDataSetChanged();
+                        }
+
+                        JSONObject jsonObject5 = new JSONObject();
+                        JSONArray newArray = new JSONArray();
+                        try {
+                            for (int i = 0; i < foods.size(); i++) {
+                                JSONObject jsonObject1 = new JSONObject();
+                                try {
+                                    jsonObject1.put("name", foods.get(i).getName());
+                                    jsonObject1.put("kcal", foods.get(i).getkcal());
+                                    jsonObject1.put("num", foods.get(i).getNum());
+                                    jsonObject1.put("order", foods.get(i).getOrder());
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                newArray.put(jsonObject1);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            jsonObject5.put("Foods", newArray);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        String filename = "Foods.json";
+                        try {
+                            try (FileOutputStream fos = getContext().openFileOutput(filename, Context.MODE_PRIVATE)) {
+                                fos.write(jsonObject5.toString().getBytes());
+                                fos.close();
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        jsonObject5 = new JSONObject();
+                        newArray = new JSONArray();
+                        try {
+                            for (int i = 0; i <nutritions.size(); i++) {
+                                JSONObject jsonObject1 = new JSONObject();
+                                try {
+                                    jsonObject1.put("carb", nutritions.get(i).getCarb());
+                                    jsonObject1.put("protein", nutritions.get(i).getProtein());
+                                    jsonObject1.put("fat", nutritions.get(i).getFat());
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                newArray.put(jsonObject1);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            jsonObject5.put("Nutrition", newArray);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        filename = "Nutritions.json";
+                        try {
+                            try (FileOutputStream fos = getContext().openFileOutput(filename, Context.MODE_PRIVATE)) {
+                                fos.write(jsonObject5.toString().getBytes());
+                                fos.close();
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                AlertDialog ad = aDialog.create();
+                ad.show();
             }
         });
 
@@ -459,12 +544,13 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
         jsonObject5 = new JSONObject();
         newArray = new JSONArray();
         try {
-            for (int i = 0; i <5; i++) {
+            for (int i = 0; i <foods.size(); i++) {
                 JSONObject jsonObject1 = new JSONObject();
                 try {
-                    jsonObject1.put("name", "밥");
-                    jsonObject1.put("kcal", "310kcal");
-                    jsonObject1.put("num", "0");
+                    jsonObject1.put("name", foods.get(i).getName());
+                    jsonObject1.put("kcal", foods.get(i).getkcal());
+                    jsonObject1.put("num", 0);
+                    jsonObject1.put("order", foods.get(i).getOrder());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

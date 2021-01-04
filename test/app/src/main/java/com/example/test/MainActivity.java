@@ -301,7 +301,7 @@ public class MainActivity extends AppCompatActivity {
                     jsonObject1.put("carb", "43");
                     jsonObject1.put("protein", "25");
                     jsonObject1.put("fat", "10");
-                    jsonObject1.put("order", "i");
+                    jsonObject1.put("order", i);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

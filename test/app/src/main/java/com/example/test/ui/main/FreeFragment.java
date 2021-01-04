@@ -237,10 +237,18 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
                     public void onClick(DialogInterface dialog, int which) {
                     }
                 });
+                aDialog.setNegativeButton("삭제", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        foods.remove(position);
+                        nutritions.remove(position);
+                        adapter.notifyDataSetChanged();
+                        write_food(false);
+                        write_nutrition();
+                    }
+                });
                 AlertDialog ad = aDialog.create();
                 ad.show();
                 return false;
-
             }
         });
 
@@ -328,7 +336,7 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
                             if (newfat.length() == 0) {
                                 newfat = "0";
                             }
-                            nutritions.add(new Nutrition(Integer.parseInt(newcarb), Integer.parseInt(newprotein), Integer.parseInt(newfat)));
+                            nutritions.add(new Nutrition(Integer.parseInt(newcarb), Integer.parseInt(newprotein), Integer.parseInt(newfat), foods.get(foods.size()-1).getOrder()));
                             adapter.notifyDataSetChanged();
                         }
                         write_food(false);
@@ -505,7 +513,7 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
             JSONArray contactArray = jsonObject.getJSONArray("Nutrition");
             for (int i = 0; i < contactArray.length(); i++) {
                 jsonObject = contactArray.getJSONObject(i);
-                nutritions.add(new Nutrition(jsonObject.getInt("carb"), jsonObject.getInt("protein"), jsonObject.getInt("fat")));
+                nutritions.add(new Nutrition(jsonObject.getInt("carb"), jsonObject.getInt("protein"), jsonObject.getInt("fat"), jsonObject.getInt("order")));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -603,6 +611,7 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
                     jsonObject1.put("carb", nutritions.get(i).getCarb());
                     jsonObject1.put("protein", nutritions.get(i).getProtein());
                     jsonObject1.put("fat", nutritions.get(i).getFat());
+                    jsonObject1.put("order", nutritions.get(i).getOrder());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

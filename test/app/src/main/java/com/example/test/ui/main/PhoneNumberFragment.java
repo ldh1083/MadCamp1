@@ -1,17 +1,21 @@
 package com.example.test.ui.main;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -23,6 +27,8 @@ import androidx.fragment.app.Fragment;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import com.example.test.MainActivity;
 import com.example.test.R;
@@ -197,6 +203,27 @@ public class PhoneNumberFragment extends Fragment  {
             return false;
             }
 
+        });
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @SuppressLint("ResourceType")
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                PopupMenu popupMenu = new PopupMenu(getContext(), view);
+                popupMenu.getMenuInflater().inflate(R.layout.call_popup_menu, popupMenu.getMenu());
+                final int index = position;
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()){
+                            case R.id.new_game:
+                                Toast.makeText((MainActivity)getContext(), "save", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse("tel:1588-3468")));
+                        }
+                        return false;
+                    }
+                });
+                popupMenu.show();
+            }
         });
         return view;
     }

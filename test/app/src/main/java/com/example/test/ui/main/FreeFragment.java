@@ -84,17 +84,20 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         user = new ArrayList<>();
-        user = get_user();
         nutritions = new ArrayList<>();
-        nutritions = get_nutrition();
         foods = new ArrayList<>();
         days = new ArrayList<>();
+
         mNow = System.currentTimeMillis();
         mDate = new Date(mNow);
         date =Integer.parseInt(mFormat.format(mDate));
-        System.out.println(date);
+
+        user = get_user();
+        nutritions = get_nutrition();
 
         View view = inflater.inflate(R.layout.free_fragment, container, false);
+
+        /* set user info text and recommand calory text*/
         nameTextView = (TextView) view.findViewById(R.id.total_kcal);
         TextView user_text = (TextView) view.findViewById(R.id.user_info);
         TextView recommand_text = (TextView) view.findViewById(R.id.recommend_kcal);
@@ -122,6 +125,8 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
                 }
             }
         }
+
+        /* edit user info */
         user_text.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -142,26 +147,8 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
                         RadioGroup genderRadioGroup = (RadioGroup) layout.findViewById(R.id.gender);
                         int selectedId = genderRadioGroup.getCheckedRadioButtonId();
                         if (selectedId == R.id.female || selectedId == R.id.male) {
-                            user = new ArrayList<>();
-                            user.add(new Owner(newName, (selectedId == R.id.female), Integer.parseInt(newHeignt), Integer.parseInt(newWeignt)));
-                            JSONObject jsonObject5 = new JSONObject();
-                            try {
-                                jsonObject5.put("name", user.get(0).getName());
-                                jsonObject5.put("gender", user.get(0).getGender());
-                                jsonObject5.put("height", user.get(0).getHeight());
-                                jsonObject5.put("weight", user.get(0).getWeight());
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            String filename = "User.json";
-                            try {
-                                try (FileOutputStream fos = getContext().openFileOutput(filename, Context.MODE_PRIVATE)) {
-                                    fos.write(jsonObject5.toString().getBytes());
-                                    fos.close();
-                                }
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                            write_user(newName, selectedId, newHeignt, newWeignt);
+
                             TextView user_text = (TextView) v.findViewById(R.id.user_info);
                             if (user.get(0).getGender()){
                                 user_text.setText("이름: " + user.get(0).getName() + ", 성별: 여자" + ", 키: " + user.get(0).getHeight() + ", 몸무게: " + user.get(0).getWeight());
@@ -186,6 +173,7 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
                                 }
                             }
                         }
+                        drawgraph();
                     }
                 });
                 aDialog.setNegativeButton("취소", new DialogInterface.OnClickListener() {
@@ -198,42 +186,26 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
             }
         });
 
-        // get Food.json to foods
-        String json = null;
-        try {
-            InputStream is = getContext().openFileInput("Foods.json");
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            json = new String(buffer, "UTF-8");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+        /* get Food.json to foods array and set total calory */
         total_kcal = 0;
         nameTextView.setTextColor(Color.GREEN);
-        try {
-            JSONObject jsonObject = new JSONObject(json);
-            JSONArray contactArray = jsonObject.getJSONArray("Foods");
-            for (int i = 0; i < contactArray.length(); i++) {
-                jsonObject = contactArray.getJSONObject(i);
-                foods.add(new Food(jsonObject.getString("name"), jsonObject.getString("kcal"), jsonObject.getInt("num"), jsonObject.getInt("order")));
-                total_kcal += jsonObject.getInt("num")*Integer.parseInt(foods.get(i).getkcal().substring(0, foods.get(i).getkcal().length()-4));
-            }
-            if (total_kcal>recommend) {
-                nameTextView.setTextColor(Color.RED);
-            }
-            else {
-                nameTextView.setTextColor(Color.GREEN);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+        get_food();
+        for (int i = 0; i < foods.size(); i++) {
+            total_kcal += foods.get(i).getNum()*Integer.parseInt(foods.get(i).getkcal().substring(0, foods.get(i).getkcal().length()-4));
+        }
+        if (total_kcal>recommend) {
+            nameTextView.setTextColor(Color.RED);
+        }
+        else {
+            nameTextView.setTextColor(Color.GREEN);
         }
 
+        /* init listView */
         listView = (ListView) view.findViewById(R.id.food_list);
         this.adapter = new FreeAdaptor(getContext(), foods, days, this);
         listView.setAdapter(adapter);
 
+        /* 길게 눌렀을 때 음식 정보를 확인 할 수 있다. */
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -272,59 +244,29 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
             }
         });
 
+        /* init chart */
         lineChart = (LineChart) view.findViewById(R.id.chart);
         dataset = new LineDataSet(entries, "day");
         data = new LineData(labels, dataset);
         lineChart.setData(data);
         lineChart.setDescription("");
-        //lineChart.animateY(5000);
 
-
-        // 파일이 없다면 생성
-        String path = getActivity().getFilesDir().getAbsolutePath() + "/Days.json";
-        File file = new File(path);
-        try {
-            FileOutputStream fos = new FileOutputStream(file, true);
-        } catch (FileNotFoundException e) {
-            System.out.println("error");
-            e.printStackTrace();
-        }
-
-        try {
-            InputStream is = getContext().openFileInput("Days.json");
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            json = new String(buffer, "UTF-8");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        try {
-            JSONObject jsonObject = new JSONObject(json);
-            JSONArray contactArray = jsonObject.getJSONArray("Dates");
-            for (int i = 0; i < contactArray.length(); i++) {
-                jsonObject = contactArray.getJSONObject(i);
-                days.add(new Day(jsonObject.getInt("date"), jsonObject.getInt("kcal")));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
+        /* 현재 날짜와 데이터 상의 가장 최근 날짜를 비교해서 다르다면 그래프, 오늘 칼로리 등을 갱신한다. */
+        get_day();
         if (days.size()>0) {
             int last_day = days.get(days.size()-1).getDate();
             if (last_day != date){
-                System.out.println("101010");
                 update();
             }
         }
         else {
-            System.out.println("123123");
             update();
         }
-        drawgraph();
+        drawgraph(); // 그래프를 그리는 함수
+
         nameTextView.setText("오늘 칼로리: "+total_kcal);
 
+        /* 음식 검색: "" 부분에 텍스트를 입력하면 그 문자열을 포함하고 있는 음식만 listview에 보여준다. */
         EditText editTextFilter = (EditText)view.findViewById(R.id.name_search) ;
         editTextFilter.addTextChangedListener(new TextWatcher() {
             @Override
@@ -344,6 +286,7 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
             }
         });
 
+        /* 음식 추가 버튼을 누르면 음식 메뉴를 추가할 수 있다. */
         ImageButton ib_add_food = (ImageButton) view.findViewById(R.id.add_food_button);
         ib_add_food.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -388,73 +331,8 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
                             nutritions.add(new Nutrition(Integer.parseInt(newcarb), Integer.parseInt(newprotein), Integer.parseInt(newfat)));
                             adapter.notifyDataSetChanged();
                         }
-
-                        JSONObject jsonObject5 = new JSONObject();
-                        JSONArray newArray = new JSONArray();
-                        try {
-                            for (int i = 0; i < foods.size(); i++) {
-                                JSONObject jsonObject1 = new JSONObject();
-                                try {
-                                    jsonObject1.put("name", foods.get(i).getName());
-                                    jsonObject1.put("kcal", foods.get(i).getkcal());
-                                    jsonObject1.put("num", foods.get(i).getNum());
-                                    jsonObject1.put("order", foods.get(i).getOrder());
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                                newArray.put(jsonObject1);
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            jsonObject5.put("Foods", newArray);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        String filename = "Foods.json";
-                        try {
-                            try (FileOutputStream fos = getContext().openFileOutput(filename, Context.MODE_PRIVATE)) {
-                                fos.write(jsonObject5.toString().getBytes());
-                                fos.close();
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                        jsonObject5 = new JSONObject();
-                        newArray = new JSONArray();
-                        try {
-                            for (int i = 0; i <nutritions.size(); i++) {
-                                JSONObject jsonObject1 = new JSONObject();
-                                try {
-                                    jsonObject1.put("carb", nutritions.get(i).getCarb());
-                                    jsonObject1.put("protein", nutritions.get(i).getProtein());
-                                    jsonObject1.put("fat", nutritions.get(i).getFat());
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                                newArray.put(jsonObject1);
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            jsonObject5.put("Nutrition", newArray);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        filename = "Nutritions.json";
-                        try {
-                            try (FileOutputStream fos = getContext().openFileOutput(filename, Context.MODE_PRIVATE)) {
-                                fos.write(jsonObject5.toString().getBytes());
-                                fos.close();
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        write_food(false);
+                        write_nutrition();
                     }
                 });
                 AlertDialog ad = aDialog.create();
@@ -507,73 +385,10 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
         else {
             days.add(new Day(date, 0));
         }
-        JSONObject jsonObject5 = new JSONObject();
-        JSONArray newArray = new JSONArray();
-        try {
-            for (int i = 0; i < days.size(); i++) {
-                JSONObject jsonObject1 = new JSONObject();
-                try {
-                    jsonObject1.put("date", days.get(i).getDate());
-                    jsonObject1.put("kcal", days.get(i).getkcal());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                newArray.put(jsonObject1);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            jsonObject5.put("Dates", newArray);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String filename = "Days.json";
-        try {
-            try (FileOutputStream fos = getContext().openFileOutput(filename, Context.MODE_PRIVATE)) {
-                fos.write(jsonObject5.toString().getBytes());
-                fos.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        write_day();
         total_kcal = 0;
         nameTextView.setTextColor(Color.GREEN);
-        jsonObject5 = new JSONObject();
-        newArray = new JSONArray();
-        try {
-            for (int i = 0; i <foods.size(); i++) {
-                JSONObject jsonObject1 = new JSONObject();
-                try {
-                    jsonObject1.put("name", foods.get(i).getName());
-                    jsonObject1.put("kcal", foods.get(i).getkcal());
-                    jsonObject1.put("num", 0);
-                    jsonObject1.put("order", foods.get(i).getOrder());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                newArray.put(jsonObject1);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            jsonObject5.put("Foods", newArray);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        filename = "Foods.json";
-        try {
-            try (FileOutputStream fos = getContext().openFileOutput(filename, Context.MODE_PRIVATE)) {
-                fos.write(jsonObject5.toString().getBytes());
-                fos.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        write_food(true);
 
         for(int i=0; i<foods.size();i++)
         {
@@ -592,7 +407,6 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
 
     @Override
     public void drawgraph() {
-        System.out.println("draw");
         ArrayList<Entry> entries= new ArrayList<>();;
         ArrayList<String> labels = new ArrayList<String>();
         if (days.size()>1) {
@@ -649,6 +463,8 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
                 return value+"kcal";
             }
         });
+
+        /* draw graph with data and label*/
         dataset.setColors(ColorTemplate.COLORFUL_COLORS);
         lineChart.setData(data);
 
@@ -670,6 +486,7 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
 
         lineChart.invalidate();
     }
+
     public ArrayList<Nutrition> get_nutrition() {
         ArrayList<Nutrition> nutritions = new ArrayList<>();
         String json = null;
@@ -695,6 +512,7 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
         }
         return nutritions;
     }
+
     public ArrayList<Owner> get_user() {
         ArrayList<Owner> user = new ArrayList<>();
         String json = null;
@@ -715,5 +533,196 @@ public class FreeFragment extends Fragment implements FreeAdaptor.AdapterCallbac
             e.printStackTrace();
         }
         return user;
+    }
+
+    public ArrayList<Day> get_day() {
+        String path = getActivity().getFilesDir().getAbsolutePath() + "/Days.json";
+        File file = new File(path);
+        try {
+            FileOutputStream fos = new FileOutputStream(file, true);
+        } catch (FileNotFoundException e) {
+            System.out.println("error");
+            e.printStackTrace();
+        }
+        String json = null;
+        try {
+            InputStream is = getContext().openFileInput("Days.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+            JSONArray contactArray = jsonObject.getJSONArray("Dates");
+            for (int i = 0; i < contactArray.length(); i++) {
+                jsonObject = contactArray.getJSONObject(i);
+                days.add(new Day(jsonObject.getInt("date"), jsonObject.getInt("kcal")));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return days;
+    }
+
+    public ArrayList<Food> get_food() {
+        String json = null;
+        try {
+            InputStream is = getContext().openFileInput("Foods.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+            JSONArray contactArray = jsonObject.getJSONArray("Foods");
+            for (int i = 0; i < contactArray.length(); i++) {
+                jsonObject = contactArray.getJSONObject(i);
+                foods.add(new Food(jsonObject.getString("name"), jsonObject.getString("kcal"), jsonObject.getInt("num"), jsonObject.getInt("order")));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return foods;
+    }
+
+    public void write_nutrition() {
+        JSONObject jsonObject5 = new JSONObject();
+        JSONArray newArray = new JSONArray();
+        try {
+            for (int i = 0; i <nutritions.size(); i++) {
+                JSONObject jsonObject1 = new JSONObject();
+                try {
+                    jsonObject1.put("carb", nutritions.get(i).getCarb());
+                    jsonObject1.put("protein", nutritions.get(i).getProtein());
+                    jsonObject1.put("fat", nutritions.get(i).getFat());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                newArray.put(jsonObject1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            jsonObject5.put("Nutrition", newArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String filename = "Nutritions.json";
+        try {
+            try (FileOutputStream fos = getContext().openFileOutput(filename, Context.MODE_PRIVATE)) {
+                fos.write(jsonObject5.toString().getBytes());
+                fos.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void write_user(String newName, int selectedId, String newHeignt, String newWeignt) {
+        user = new ArrayList<>();
+        user.add(new Owner(newName, (selectedId == R.id.female), Integer.parseInt(newHeignt), Integer.parseInt(newWeignt)));
+        JSONObject jsonObject5 = new JSONObject();
+        try {
+            jsonObject5.put("name", user.get(0).getName());
+            jsonObject5.put("gender", user.get(0).getGender());
+            jsonObject5.put("height", user.get(0).getHeight());
+            jsonObject5.put("weight", user.get(0).getWeight());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String filename = "User.json";
+        try {
+            try (FileOutputStream fos = getContext().openFileOutput(filename, Context.MODE_PRIVATE)) {
+                fos.write(jsonObject5.toString().getBytes());
+                fos.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void write_day() {
+        JSONObject jsonObject5 = new JSONObject();
+        JSONArray newArray = new JSONArray();
+        try {
+            for (int i = 0; i < days.size(); i++) {
+                JSONObject jsonObject1 = new JSONObject();
+                try {
+                    jsonObject1.put("date", days.get(i).getDate());
+                    jsonObject1.put("kcal", days.get(i).getkcal());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                newArray.put(jsonObject1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            jsonObject5.put("Dates", newArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String filename = "Days.json";
+        try {
+            try (FileOutputStream fos = getContext().openFileOutput(filename, Context.MODE_PRIVATE)) {
+                fos.write(jsonObject5.toString().getBytes());
+                fos.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void write_food(boolean init) {
+        JSONObject jsonObject5 = new JSONObject();
+        JSONArray newArray = new JSONArray();
+        try {
+            for (int i = 0; i < foods.size(); i++) {
+                JSONObject jsonObject1 = new JSONObject();
+                try {
+                    jsonObject1.put("name", foods.get(i).getName());
+                    jsonObject1.put("kcal", foods.get(i).getkcal());
+                    if (init) {
+                        jsonObject1.put("num", 0);
+                    }
+                    else {
+                        jsonObject1.put("num", foods.get(i).getNum());
+                    }
+                    jsonObject1.put("order", foods.get(i).getOrder());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                newArray.put(jsonObject1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            jsonObject5.put("Foods", newArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String filename = "Foods.json";
+        try {
+            try (FileOutputStream fos = getContext().openFileOutput(filename, Context.MODE_PRIVATE)) {
+                fos.write(jsonObject5.toString().getBytes());
+                fos.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

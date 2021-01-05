@@ -144,18 +144,61 @@ public class MainActivity extends AppCompatActivity {
             JSONObject jsonObject5 = new JSONObject();
             JSONArray newArray = new JSONArray();
             try {
-                for (int i = 0; i <5; i++) {
-                    JSONObject jsonObject1 = new JSONObject();
-                    try {
-                        jsonObject1.put("name", "밥"+i);
-                        jsonObject1.put("kcal", "310kcal");
-                        jsonObject1.put("num", "0");
-                        jsonObject1.put("order", Integer.toString(i));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    newArray.put(jsonObject1);
+                int i=0;
+                JSONObject jsonObject1 = new JSONObject();
+                try {
+                    jsonObject1.put("name", "밥");
+                    jsonObject1.put("kcal", "310kcal");
+                    jsonObject1.put("num", "0");
+                    jsonObject1.put("order", Integer.toString(i));
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
+                newArray.put(jsonObject1);
+                i++;
+                jsonObject1 = new JSONObject();
+                try {
+                    jsonObject1.put("name", "돼지갈비(100g)");
+                    jsonObject1.put("kcal", "240kcal");
+                    jsonObject1.put("num", "0");
+                    jsonObject1.put("order", Integer.toString(i));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                newArray.put(jsonObject1);
+                i++;
+                jsonObject1 = new JSONObject();
+                try {
+                    jsonObject1.put("name", "고등어 구이(100g)");
+                    jsonObject1.put("kcal", "275kcal");
+                    jsonObject1.put("num", "0");
+                    jsonObject1.put("order", Integer.toString(i));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                newArray.put(jsonObject1);
+                i++;
+                jsonObject1 = new JSONObject();
+                try {
+                    jsonObject1.put("name", "계란");
+                    jsonObject1.put("kcal", "155kcal");
+                    jsonObject1.put("num", "0");
+                    jsonObject1.put("order", Integer.toString(i));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                newArray.put(jsonObject1);
+                i++;
+                jsonObject1 = new JSONObject();
+                try {
+                    jsonObject1.put("name", "김치(40g)");
+                    jsonObject1.put("kcal", "10kcal");
+                    jsonObject1.put("num", "0");
+                    jsonObject1.put("order", Integer.toString(i));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                newArray.put(jsonObject1);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -317,18 +360,62 @@ public class MainActivity extends AppCompatActivity {
         JSONObject jsonObject5 = new JSONObject();
         JSONArray newArray = new JSONArray();
         try {
-            for (int i = 0; i <5; i++) {
-                JSONObject jsonObject1 = new JSONObject();
-                try {
-                    jsonObject1.put("carb", "43");
-                    jsonObject1.put("protein", "25");
-                    jsonObject1.put("fat", "10");
-                    jsonObject1.put("order", i);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                newArray.put(jsonObject1);
+            int i=0;
+            JSONObject jsonObject1 = new JSONObject();
+            try {
+                jsonObject1.put("carb", "43");
+                jsonObject1.put("protein", "25");
+                jsonObject1.put("fat", "10");
+                jsonObject1.put("order", i);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
+            newArray.put(jsonObject1);
+
+            i++;
+            jsonObject1 = new JSONObject();
+            try {
+                jsonObject1.put("carb", "8");
+                jsonObject1.put("protein", "14");
+                jsonObject1.put("fat", "19");
+                jsonObject1.put("order", i);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            newArray.put(jsonObject1);
+            i++;
+            jsonObject1 = new JSONObject();
+            try {
+                jsonObject1.put("carb", "1");
+                jsonObject1.put("protein", "23");
+                jsonObject1.put("fat", "20");
+                jsonObject1.put("order", i);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            newArray.put(jsonObject1);
+            i++;
+            jsonObject1 = new JSONObject();
+            try {
+                jsonObject1.put("carb", "1");
+                jsonObject1.put("protein", "13");
+                jsonObject1.put("fat", "11");
+                jsonObject1.put("order", i);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            newArray.put(jsonObject1);
+            i++;
+            jsonObject1 = new JSONObject();
+            try {
+                jsonObject1.put("carb", "1");
+                jsonObject1.put("protein", "1");
+                jsonObject1.put("fat", "1");
+                jsonObject1.put("order", i);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            newArray.put(jsonObject1);
         } catch (Exception e) {
             e.printStackTrace();
         }

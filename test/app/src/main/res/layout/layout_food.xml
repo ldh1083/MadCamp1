@@ -1,10 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="50dp"
     android:orientation="horizontal"
     android:descendantFocusability="blocksDescendants"
-    android:layout_margin="5dp">
+    android:layout_margin="5dp"
+    android:gravity="center"
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -48,26 +50,27 @@
                 android:id="@+id/food_num"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"/>
+                android:layout_weight="3"/>
             <ImageButton
                 android:id="@+id/plus_button"
                 android:layout_width="0dp"
-                android:layout_height="40dp"
+                android:layout_height="30dp"
                 android:layout_weight="1"
                 android:background="@color/white"
-                android:src="@drawable/plus"
+                android:src="@drawable/plus1"
                 android:scaleType="fitCenter"
-                android:layout_margin="5dp"/>
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"/>
             <ImageButton
                 android:id="@+id/minus_button"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@color/white"
-                android:src="@drawable/minus"
+                android:src="@drawable/minus1"
                 android:scaleType="fitCenter"
-                android:layout_margin="5dp"/>
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"/>
         </LinearLayout>
-
     </LinearLayout>
 </LinearLayout>

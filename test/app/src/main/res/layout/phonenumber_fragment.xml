@@ -8,16 +8,19 @@
     tools:context=".ui.main.PhoneNumberFragment"
     android:orientation="vertical">
     <LinearLayout
+        android:layout_margin="5dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:background="#1B000000">
-        <TextView
-            android:text=" 검색: "
-            android:textSize="20dp"
-            android:textColor="@color/black"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+        android:layout_height="40dp"
+        android:background="@drawable/border_search_contact"
+        android:paddingLeft="5dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:gravity="bottom">
+        <ImageView
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/df_foreground"
+            android:layout_gravity="center"/>
         <EditText
             android:id="@+id/name_search"
             android:layout_width="wrap_content"
@@ -25,10 +28,12 @@
             android:layout_weight="1"
             android:background="@null"
             android:includeFontPadding="false"
-            android:gravity="bottom">
+            android:gravity="bottom"
+            android:layout_gravity="center">
         </EditText>
     </LinearLayout>
     <ListView
+        android:layout_margin="5dp"
         android:id="@+id/listview1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -438,6 +438,7 @@ public class PhoneNumberFragment extends Fragment  {
                         String phoneNo = pCur.getString(pCur.getColumnIndex(
                                 ContactsContract.CommonDataKinds.Phone.NUMBER));
                         System.out.println(j);
+                        phoneNo = phoneNo.replaceAll("-", "");
                         phonenumbers.add(new Phonenumber(name, phoneNo, j));
                         adapter.notifyDataSetChanged();
                         j++;

@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabs = (TabLayout) findViewById(R.id.tabs);
         tabs.addTab(tabs.newTab().setText("전화번호부"));
         tabs.addTab(tabs.newTab().setText("갤러리"));
-        tabs.addTab(tabs.newTab().setText("자유"));
+        tabs.addTab(tabs.newTab().setText("식단"));
         tabs.setTabGravity(TabLayout.GRAVITY_FILL);
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabs));

@@ -34,7 +34,7 @@ public class GalleryFragment extends Fragment implements MainActivity.OnBackPres
     private ScrollView sv;
     private GalleryAdaptor gelleryAdapter;
     private ImageButton focus_button;
-    public static int img[] = {R.drawable.img1, R.drawable.img2, R.drawable.img3, R.drawable.img4, R.drawable.img1, R.drawable.img2, R.drawable.img3, R.drawable.img4, R.drawable.img1, R.drawable.img2, R.drawable.img3, R.drawable.img4};
+    public static int img[] = {R.drawable.img1, R.drawable.img2, R.drawable.img3, R.drawable.img4, R.drawable.img5, R.drawable.img6, R.drawable.img7, R.drawable.img8, R.drawable.img9, R.drawable.img10};
     public static GalleryFragment newInstance(int index) {
         GalleryFragment fragment = new GalleryFragment();
         Bundle bundle = new Bundle();

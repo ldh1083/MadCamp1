@@ -40,6 +40,7 @@ public class GalleryFragment extends Fragment implements MainActivity.OnBackPres
     private ScrollView sv;
     private GalleryAdaptor gelleryAdapter;
     private ImageButton focus_button;
+    public static int img[] = {R.drawable.img1, R.drawable.img2, R.drawable.img3, R.drawable.img4, R.drawable.img1, R.drawable.img2, R.drawable.img3, R.drawable.img4, R.drawable.img1, R.drawable.img2, R.drawable.img3, R.drawable.img4};
     public static GalleryFragment newInstance(int index) {
         GalleryFragment fragment = new GalleryFragment();
         Bundle bundle = new Bundle();
@@ -105,15 +106,15 @@ public class GalleryFragment extends Fragment implements MainActivity.OnBackPres
                 }
             });
         }
-        viewPager.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v) {
-                //big_images.get(finalI).setVisibility(View.INVISIBLE);
-                //viewPager.setVisibility(View.INVISIBLE);
-                //sv.setVisibility(View.VISIBLE);
-            }
-        });
+//        viewPager.setOnClickListener(new View.OnClickListener()
+//        {
+//            @Override
+//            public void onClick(View v) {
+//                //big_images.get(finalI).setVisibility(View.INVISIBLE);
+//                //viewPager.setVisibility(View.INVISIBLE);
+//                //sv.setVisibility(View.VISIBLE);
+//            }
+//        });
         focus_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -134,11 +135,12 @@ public class GalleryFragment extends Fragment implements MainActivity.OnBackPres
                     BitmapFactory.decodeResource(getResources(), R.drawable.img1), null, null));
         } catch (Exception e) { System.out.println(e.toString()); }*/
         System.out.println("image1 write0");
-        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.ex);
+        viewPager.findViewById(R.id.image2);
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), img[viewPager.getCurrentItem()]);
 
-        File outputFile = new File(getContext().getCacheDir(), "example.png");
+        File outputFile = new File(getContext().getCacheDir(), "share.jpg");
         FileOutputStream outPutStream = new FileOutputStream(outputFile);
-        bm.compress(Bitmap.CompressFormat.PNG, 100, outPutStream);
+        bm.compress(Bitmap.CompressFormat.JPEG, 100, outPutStream);
         outPutStream.flush();
         outPutStream.close();
         outputFile.setReadable(true, false);
@@ -172,7 +174,7 @@ public class GalleryFragment extends Fragment implements MainActivity.OnBackPres
         Uri imageUri = FileProvider.getUriForFile(getContext(), "com.example.test.fileprovider", outputFile);
         Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
         shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
-        shareIntent.setType("image/png");
+        shareIntent.setType("image/*");
         getContext().startActivity(shareIntent);
     }
     public void back(){
@@ -200,6 +202,7 @@ public class GalleryFragment extends Fragment implements MainActivity.OnBackPres
         viewPager.setAdapter(gelleryAdapter);
         this.viewPager.setVisibility(View.INVISIBLE);
         this.sv.setVisibility(View.VISIBLE);
+        focus_button.setVisibility(View.INVISIBLE);
         ((MainActivity) getActivity()).can_scroll(true);
     }
     @Override

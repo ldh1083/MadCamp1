@@ -34,7 +34,7 @@ public class GalleryFragment extends Fragment implements MainActivity.OnBackPres
     private ScrollView sv;
     private GalleryAdaptor gelleryAdapter;
     private ImageButton focus_button;
-    public static int img[] = {R.drawable.img1, R.drawable.img2, R.drawable.img3, R.drawable.img4, R.drawable.img5, R.drawable.img6, R.drawable.img7, R.drawable.img8, R.drawable.img9, R.drawable.img10};
+    public static int img[] = {R.drawable.img1, R.drawable.img2, R.drawable.img3, R.drawable.img4, R.drawable.img5, R.drawable.img6, R.drawable.img7, R.drawable.img8, R.drawable.img9, R.drawable.img10, R.drawable.img11, R.drawable.img12, R.drawable.img13, R.drawable.img14, R.drawable.img15, R.drawable.img16, R.drawable.img17, R.drawable.img18, R.drawable.img19, R.drawable.img20};
     public static GalleryFragment newInstance(int index) {
         GalleryFragment fragment = new GalleryFragment();
         Bundle bundle = new Bundle();
@@ -50,7 +50,7 @@ public class GalleryFragment extends Fragment implements MainActivity.OnBackPres
         focus_button = (ImageButton)view.findViewById(R.id.share_icon);
         ArrayList<ImageView> images = new ArrayList<>();
         ImageView iv;
-        for(int i=0; i<10;i++){
+        for(int i=0; i<20;i++){
             String iid_s = "img"+(i+1);
             int iid;
             try {
@@ -66,7 +66,7 @@ public class GalleryFragment extends Fragment implements MainActivity.OnBackPres
 
         ArrayList<ImageView> big_images = new ArrayList<>();
         ImageView iv_big;
-        for(int i=0; i<10;i++){
+        for(int i=0; i<20;i++){
             String iid_s = "image"+(i+1);
             int iid;
             try {
@@ -81,13 +81,13 @@ public class GalleryFragment extends Fragment implements MainActivity.OnBackPres
         }
         viewPager = (CustomViewPager)view.findViewById(R.id.view_pager1);
 
-        for(int i=0; i<10;i++){
+        for(int i=0; i<20;i++){
             int finalI = i;
             images.get(i).setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v) {
-                    gelleryAdapter = new GalleryAdaptor(getChildFragmentManager(), 10);
+                    gelleryAdapter = new GalleryAdaptor(getChildFragmentManager(), 20);
                     ((MainActivity) getActivity()).can_scroll(false);
                     viewPager.setAdapter(gelleryAdapter);
                     viewPager.setVisibility(View.INVISIBLE);

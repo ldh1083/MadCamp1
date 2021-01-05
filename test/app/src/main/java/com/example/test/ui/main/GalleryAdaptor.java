@@ -19,7 +19,7 @@ import com.example.test.R;
  * one of the sections/tabs/pages.
  */
 public class GalleryAdaptor extends FragmentPagerAdapter {
-    private int count = 10;
+    private int count = 20;
     //private static final int[] TAB_TITLES = new int[]{R.string.tab_text_1, R.string.tab_text_2, R.string.tab_text_2};
     //private static String[] TAB_TITLES = new String[]{"Phone number", "Gallery", "Free"};
 
